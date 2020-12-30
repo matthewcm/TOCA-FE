@@ -28,7 +28,7 @@ const Header = (props) => {
                             </a>
                             <div className="hidden md:block">
                                 <div className="ml-10 flex items-baseline space-x-4">
-                                    <Link key={props.links[0].label} href={props.links[0].link || "#"}>
+                                    <Link key={props.links[0].label} to={props.links[0].link || "#"}>
                                         <h1 className="font-bold text-blue-400 text-md"> Toolkit for Online Community Analytics </h1>
                                     </Link>
                                 </div>
