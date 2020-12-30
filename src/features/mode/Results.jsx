@@ -2,6 +2,8 @@ import React from 'react'
 import 'react-vis/dist/style.css';
 import {XYPlot, LineSeries, VerticalGridLines, HorizontalGridLines, XAxis,YAxis } from 'react-vis';
 
+import Graph from 'react-vis-network-graph'
+
 import {selectModeQuery} from "./modeSlice";
 import {useSelector} from "react-redux";
 
@@ -23,11 +25,42 @@ const Results = () => {
         {x: 9, y: 0}
     ];
 
+    const graph = {
+        nodes: [
+            { id: 1, label: "Hacker 1", title: "node 1 tootip text" },
+            { id: 2, label: "Gamer 2", title: "node 2 tootip text" },
+            { id: 3, label: "Gamer 3", title: "node 3 tootip text" },
+            { id: 4, label: "Hacker 4", title: "node 4 tootip text" },
+            { id: 5, label: "Gamer 5", title: "node 5 tootip text" }
+        ],
+        edges: [
+            { from: 1, to: 2 },
+            { from: 1, to: 3 },
+            { from: 2, to: 4 },
+            { from: 2, to: 5 }
+        ]
+    };
+
+    const options = {
+        layout: {
+            hierarchical: true
+        },
+        edges: {
+            color: "#000000"
+        },
+    };
+
+    const events = {
+        select: function(event) {
+            var { nodes, edges } = event;
+        }
+    };
+
     return (
 
-        <>
+        <div className="flex flex-col w-full">
                 <div
-                    className="w-72 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                    className="m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
                     <div className="overflow-hidden">
                         <div className="text-2xl font-medium mb-8 text-gray-800 dark:text-white">
                             Mode: {mode}
@@ -58,7 +91,17 @@ const Results = () => {
                             <LineSeries data={data}/>
                         </XYPlot>
                     </div>
-            </>
+
+            <div
+                className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <Graph
+                    graph={graph}
+                    options={options}
+                    events={events}
+                />
+
+            </div>
+            </div>
 
 
     )
