@@ -1,5 +1,6 @@
 import React from 'react'
 import Navbar from "./components/Header";
+import Footer from "./components/Footer"
 
 import {
     BrowserRouter as Router,
@@ -45,7 +46,7 @@ function App() {
                     <Redirect to="/>" />
                 </Switch>
             </div>
-
+            <Footer/>
 
         </Router>
     );
