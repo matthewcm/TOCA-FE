@@ -1,11 +1,8 @@
 import React, {useState} from 'react'
-import {Redirect, Route, Link, Switch} from "react-router-dom";
-import Dashboard from "./Dashboard";
-import Doc from "./Doc";
 import TextSummarisation from "../features/mode/TextSummarisation";
 import { useDispatch} from "react-redux";
 
-import {setMode ,summaryQuery} from "../features/mode/modeSlice";
+import {setMode} from "../features/mode/modeSlice";
 
 const Sidebar = () => {
     const [mode, setIMode] = useState(null);
@@ -83,7 +80,7 @@ const Sidebar = () => {
                         <h1 className="text-center font-bold">{mode}</h1>
 
                     )}
-                    {mode && mode == 'SUMMARY' &&(
+                    {mode && mode === 'SUMMARY' &&(
                         <TextSummarisation/>
                     )}
                 </div>
