@@ -18,6 +18,7 @@ const modeSlice = createSlice({
 })
 
 export const selectMode = state => state.mode.mode
+export const selectModeQuery = state => state.mode
 
 export const {setMode ,summaryQuery} = modeSlice.actions
 export default modeSlice.reducer
