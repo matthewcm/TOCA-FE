@@ -27,6 +27,7 @@ function App() {
                         path={'/doc'}
                         component={Doc}
                     />
+                    <Redirect to={"/"}/>
                 </Switch>
             </div>
             <Footer/>

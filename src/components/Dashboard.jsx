@@ -1,7 +1,6 @@
 import React from 'react'
 import Sidebar from './Sidebar'
 
-import { useDispatch} from "react-redux";
 import Results from "../features/mode/Results";
 
 

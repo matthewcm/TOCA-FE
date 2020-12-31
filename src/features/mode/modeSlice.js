@@ -9,7 +9,7 @@ const modeSlice = createSlice({
             state.mode = action.payload.mode
         },
         summaryQuery(state, action) {
-            if (state.mode == 'SUMMARY'){
+            if (state.mode === 'SUMMARY'){
                 state.query = action.payload.query
                 state.search = action.payload.search
             }
