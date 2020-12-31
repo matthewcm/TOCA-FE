@@ -1,11 +1,17 @@
 import React from 'react'
-import 'react-vis/dist/style.css';
-import {XYPlot, MarkSeries,LineSeries, VerticalBarSeries,VerticalGridLines, HorizontalGridLines, XAxis,YAxis } from 'react-vis';
+import {XYPlot, RadialChart,ForceDi , MarkSeries,LineSeries, VerticalBarSeries,VerticalGridLines, HorizontalGridLines, XAxis,YAxis } from 'react-vis';
 
 import Graph from 'react-vis-network-graph'
 
 import {selectModeQuery} from "./modeSlice";
 import {useSelector} from "react-redux";
+import ForceDirectedGraph from "../../components/ForceGraph";
+
+import LesMisData from './les-mis-data.json';
+import {createData} from "../../components/Table";
+
+import Table from '../../components/Table'
+import List, {createData as createSummaries} from '../../components/List'
 
 const Results = () => {
 
@@ -56,6 +62,13 @@ const Results = () => {
         }
     };
 
+    const rows = [
+        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+        createData('Eclair', 262, 16.0, 24, 6.0),
+        createData('Cupcake', 305, 3.7, 67, 4.3),
+        createData('Gingerbread', 356, 16.0, 49, 3.9),
+    ];
     return (
 
         <div className="flex flex-row flex-wrap w-full">
@@ -271,6 +284,41 @@ const Results = () => {
                 />
             </XYPlot>
             </div>
+            <div
+                className=" h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                Pie Chart
+                <RadialChart
+                    width={300}
+                    height={300}
+                    data={[
+                        {
+                            angle: 12,
+                            label: 'Hacking'
+                        },
+                        {
+                            angle: 23,
+                            label: 'Skyrim'
+                        },
+                        {
+                            angle: 29,
+                            label: 'Cyberpunk'
+                        },
+                        {
+                            angle: 26,
+                            label: 'Minecraft'
+                        },
+                        {
+                            angle: 14,
+                            label: 'Fallout'
+                        }
+                    ]}
+                    labelsRadiusMultiplier={1.1}
+                    labelsStyle={{
+                        fontSize: 12
+                    }}
+                    showLabels
+                />
+            </div>
 
             <div
                 className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
@@ -282,6 +330,43 @@ const Results = () => {
                 />
 
             </div>
+            <div
+                className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <div className="force-directed-example">
+                    Force Graph
+                    <ForceDirectedGraph
+                        data={LesMisData}
+                        height={300}
+                        width={300}
+                        animation
+                        strength={45}
+                    />
+                </div>
+            </div>
+
+            <div
+                className="h-96 w-1/2 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+
+                Topics Found
+
+                <Table rows={rows} />
+            </div>
+            <div
+                className="h-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+
+                Text Summary
+
+
+                <List rows={
+
+                    [
+                    createSummaries('Mark Wall', "The best toolkit",'31/12/2020'  ),
+                    createSummaries('Jessie Simpson', "Braindead science needed to make mods",'31/12/2020'  )
+                    ]
+                }/>
+            </div>
+
+
             </div>
 
 
