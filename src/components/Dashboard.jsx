@@ -26,6 +26,7 @@ const Dashboard = () => {
         <div className="flex w-full bg-gray-800 " >
             <Sidebar/>
             <Results/>
+            <iframe src="https://embed.deepnote.com/22344813-5c7a-4a97-ab33-49ce3f826a29/1b1fa759-aa3b-4a45-b755-1473c43e8814/00013-77cb1b8e-d4a1-4d60-9dc5-395928be09f2?height=653" height="653" width="500"/>
         </div>
         </div>
             </>
