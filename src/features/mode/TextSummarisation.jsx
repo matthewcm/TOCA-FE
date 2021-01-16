@@ -5,6 +5,7 @@ import {summaryQuery} from "./modeSlice";
 import TextToCSV from "./TextToCSV";
 import URLToCSV from "./URLToCSV";
 import FileToCSV from "./FileToCSV";
+import ExampleToCSV from "./ExampleToCSV";
 
 const TextSummarisation = () => {
     const dispatch = useDispatch()
@@ -60,6 +61,13 @@ const TextSummarisation = () => {
                 </div>
             )
             break
+        case 'EXAMPLE':
+            modeCode = (
+                <div className="pb-4">
+                    <ExampleToCSV/>
+                </div>
+            )
+            break
         default:
             modeCode = (
                 <div className="pb-4">
@@ -92,6 +100,10 @@ const TextSummarisation = () => {
                         onClick={() => handleDataTextClick('FILE')}
                         className="mt-4 uppercase w-32 py-2 bg-red-300 text-red-600  shadow-sm hover:shadow-lg"> From File
                     </button>
+                        <button
+                            onClick={() => handleDataTextClick('EXAMPLE')}
+                            className="mt-4 uppercase w-32 py-2 bg-green-300 text-green-600  shadow-sm hover:shadow-lg"> Example List
+                        </button>
 
                 </div>
             </div>

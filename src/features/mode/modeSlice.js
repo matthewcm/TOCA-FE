@@ -12,6 +12,7 @@ const modeSlice = createSlice({
             if (state.mode == 'SUMMARY'){
                 state.query = action.payload.query
                 state.search = action.payload.search
+                state.active = true
             }
         },
         setCSV(state, action) {
@@ -26,6 +27,7 @@ const modeSlice = createSlice({
 
 export const selectMode = state => state.mode.mode
 export const selectModeQuery = state => state.mode
+export const selectCSV = state => state.mode.csv
 
 export const {setMode ,summaryQuery, setCSV} = modeSlice.actions
 export default modeSlice.reducer

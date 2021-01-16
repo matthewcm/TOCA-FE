@@ -4,12 +4,17 @@ import { readString } from 'react-papaparse';
 
 import {setCSV} from "./modeSlice";
 
-const TextToCSV = () => {
+const ExampleToCSV = () => {
     const dispatch = useDispatch()
 
     const [csvText, setCSVText] = useState('')
 
     const onTextChange = e => setCSVText(e.target.value)
+
+    const hacking = "hacking csv"
+    const corona = "corona csv"
+    const all = "all csv"
+    const trending = "trending csv"
 
     const onSubmit = () => {
         if (csvText ){
@@ -37,8 +42,14 @@ const TextToCSV = () => {
 
         <div className=" bg-white shadow-md rounded px-8 py-8 pt-8">
             <div className="pb-4">
-                <label htmlFor="email" className="text-sm block font-bold  pb-2">Provide dataset</label>
-                <textarea cols={"40"} rows={'5'} value={csvText} onChange={onTextChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " placeholder="Enter CSV here"/>
+                <label htmlFor="dataset" className="text-sm block font-bold  pb-2">Dataset dropdown</label>
+                <select name="dataset" onChange={onTextChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " >
+                    <option value={hacking}> Game Hacking </option>
+                    <option value={trending}>  Trending</option>
+                    <option value={all}> All </option>
+                    <option value={corona}> Corona</option>
+                </select>
+
             </div>
 
             <div>
@@ -51,4 +62,4 @@ const TextToCSV = () => {
     )
 }
 
-export default TextToCSV
+export default ExampleToCSV

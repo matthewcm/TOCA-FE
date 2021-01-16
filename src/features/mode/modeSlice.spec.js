@@ -1,4 +1,4 @@
-import mode, {setMode, summaryQuery, setCSV} from './modeSlice'
+import mode, {setMode, summaryQuery, setCSV, selectModeQuery, selectCSV} from './modeSlice'
 
 describe('mode reducer', () => {
     it('should handle initial state', () => {
@@ -75,6 +75,12 @@ describe('mode reducer', () => {
             ).url
         ).toEqual(true)
 
+    })
+    it ('should select mode, grab mode from redux store', () => {
+        expect(selectModeQuery({mode:'SUMMARY'})).toEqual('SUMMARY')
+    })
+    it ('should select CSV, grab csv from redux store', () => {
+        expect(selectCSV({csv:'csv possibly'})).toEqual('csv possibly')
     })
 
     // it should allow for redux for DATASET
