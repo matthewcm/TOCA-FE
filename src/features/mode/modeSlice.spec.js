@@ -1,4 +1,4 @@
-import mode, {setMode, summaryQuery} from './modeSlice'
+import mode, {setMode, summaryQuery, setCSV, selectModeQuery, selectCSV} from './modeSlice'
 
 describe('mode reducer', () => {
     it('should handle initial state', () => {
@@ -45,4 +45,43 @@ describe('mode reducer', () => {
                 }
             )
         ).not.toEqual({mode:'SUMMARY', search: 'r/animals', query:'walrus'}) })
+
+
+    it ('should handle SET_CSV if mode is set', () => {
+        expect(
+            mode(
+                {mode: 'SUMMARY'},
+                {
+                    type: setCSV.type,
+                    payload:{
+                        csv: 'csv possibly'
+                    }
+                }
+            ).csv
+        ).toEqual('csv possibly')
+
+    })
+    it ('should handle url SET_CSV if mode is set', () => {
+        expect(
+            mode(
+                {mode: 'SUMMARY'},
+                {
+                    type: setCSV.type,
+                    payload:{
+                        csv: 'csv possibly',
+                        url: true
+                    }
+                }
+            ).url
+        ).toEqual(true)
+
+    })
+    it ('should select mode, grab mode from redux store', () => {
+        expect(selectModeQuery({mode:'SUMMARY'})).toEqual('SUMMARY')
+    })
+    it ('should select CSV, grab csv from redux store', () => {
+        expect(selectCSV({csv:'csv possibly'})).toEqual('csv possibly')
+    })
+
+    // it should allow for redux for DATASET
 })

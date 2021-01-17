@@ -1,373 +1,199 @@
-import React from 'react'
-import {XYPlot, RadialChart,ForceDi , MarkSeries,LineSeries, VerticalBarSeries,VerticalGridLines, HorizontalGridLines, XAxis,YAxis } from 'react-vis';
+import React, {useEffect, useState} from 'react'
 
-import Graph from 'react-vis-network-graph'
-
-import {selectModeQuery} from "./modeSlice";
+import {selectModeQuery, selectCSV} from "./modeSlice";
 import {useSelector} from "react-redux";
-import ForceDirectedGraph from "../../components/ForceGraph";
-
-import LesMisData from './les-mis-data.json';
-import {createData} from "../../components/Table";
-
-import Table from '../../components/Table'
-import List, {createData as createSummaries} from '../../components/List'
+import {readString} from "react-papaparse";
 
 const Results = () => {
 
+    const [sentimentData, setSentimentData] = useState(null)
+
+
     console.log(selectModeQuery)
-    const {mode, query, search}  = useSelector(selectModeQuery)
+    const {mode, query, search, active}  = useSelector(selectModeQuery)
 
-    const data = [
-        {x: 0, y: 8},
-        {x: 1, y: 5},
-        {x: 2, y: 4},
-        {x: 3, y: 9},
-        {x: 4, y: 1},
-        {x: 5, y: 7},
-        {x: 6, y: 6},
-        {x: 7, y: 3},
-        {x: 8, y: 2},
-        {x: 9, y: 0}
-    ];
+    const csv = useSelector(selectCSV)
+    console.log(csv)
 
-    const graph = {
-        nodes: [
-            { id: 1, label: "Hacker 1", title: "node 1 tootip text" },
-            { id: 2, label: "Gamer 2", title: "node 2 tootip text" },
-            { id: 3, label: "Gamer 3", title: "node 3 tootip text" },
-            { id: 4, label: "Hacker 4", title: "node 4 tootip text" },
-            { id: 5, label: "Gamer 5", title: "node 5 tootip text" }
-        ],
-        edges: [
-            { from: 1, to: 2 },
-            { from: 1, to: 3 },
-            { from: 2, to: 4 },
-            { from: 2, to: 5 }
-        ]
-    };
+    const csv_read = readString(csv);
+    const [headers, ...csv_content] = csv_read.data
+    console.log(csv_content)
 
-    const options = {
-        layout: {
-            hierarchical: true
-        },
-        edges: {
-            color: "#000000"
-        },
-    };
+    const csv_c_preview = csv_content.slice(0, 50)
 
-    const events = {
-        select: function(event) {
-            var { nodes, edges } = event;
-        }
-    };
+    useEffect(() => {
+        fetch('/do', {
+            method: 'POST',
+            body: csv
+        })
+            .then(res => res.json())
+            .then(data => {
+                setSentimentData(data)
+            })
+    }, [csv])
 
-    const rows = [
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-    ];
+
+    const MAX_LENGTH = 250;
     return (
 
-        <div className="flex flex-row flex-wrap w-full">
-            <div className="w-full">
+        <div className=" flex flex-row flex-wrap w-full">
 
-                <div
-                    className="w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                    <div className="overflow-hidden">
-                        <div className="text-2xl font-medium mb-8 text-gray-800 dark:text-white">
-                            Mode: {mode}
-                        </div>
-                        <div className="leading-loose text-sm font-light text-gray-700 dark:text-gray-50 mb-10">
-                            <div className="font-bold">
-                                search {search}
-                            </div>
+            <div className="w-72  bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <div>
+                    <div className="text-2xl font-medium mb-8 text-gray-800 dark:text-white">
+                        Mode: {mode}
+                    </div>
+                    <div className="leading-loose text-sm font-light text-gray-700 dark:text-gray-50 mb-10">
+                        <div className="font-bold">
+                            dataset preview:
+
                             <div>
-                                Query: {query}
+
+                                {csv.length > MAX_LENGTH ?
+                                    (
+                                        <div className="text-gray-500">
+                                            {`${csv.substring(0, MAX_LENGTH)}...`}
+                                            <div className="text-blue-700"> CSV exceeds length</div>
+                                        </div>
+                                    ) :
+                                    <p>{csv}</p>
+                                }
+                            </div>
+
+                        </div>
+                        <div className="font-bold">
+                            search {search}
+                        </div>
+                        <div>
+                            Query: {query}
+                        </div>
+                    </div>
+                    <div className="px-4 mt-8">
+                        <button type="button"
+                                className="py-2 px-4  bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ">
+                            FLIP
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {sentimentData &&(
+
+            <div
+                className="overflow-scroll h-96 bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <div className="overflow-hidden">
+
+                    <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-3xl max-h-full object-cover">
+                        <div className="py-8">
+                            <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
+                                <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                                    <table className="min-w-full leading-normal">
+                                        <thead>
+                                        <tr>
+                                            {sentimentData.headers.map(header=>(
+
+                                                <th scope="col"
+                                                    className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                                                    {header}
+                                                </th>
+                                            ) )}
+                                            {Object.keys(sentimentData.data[0].sentiment).map(key => (
+                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                    <p className="text-gray-900 whitespace-no-wrap">
+                                                        {key}
+                                                    </p>
+                                                </td>
+                                            ))}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {sentimentData.data.map(dt=> {
+
+                                            let styllez = "bg-white"
+                                            if (dt.sentiment['compound'] > 0){
+                                                styllez = "bg-green-50"
+                                            }else if (dt.sentiment['compound'] < 0){
+                                                styllez = "bg-red-50"
+                                            }
+
+                                            return (
+
+
+                                                <tr className={styllez}>
+                                                    {dt.content.map(thread_data => (
+                                                        <td className="px-5 py-5 border-b border-gray-200 text-sm">
+                                                            <p className="text-gray-900 whitespace-no-wrap">
+                                                                {thread_data}
+                                                            </p>
+                                                        </td>
+                                                    ))}
+
+                                                    {Object.keys(dt.sentiment).map(key => (
+                                                        <td className="px-5 py-5 border-b border-gray-200  text-sm">
+                                                            <p className="text-gray-900 whitespace-no-wrap">
+                                                                {dt.sentiment[key]}
+                                                            </p>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            )
+                                        })}
+
+                                        </tbody>
+                                    </table>
+                                    <p>Loaded max 50 results in preview</p>
+                                </div>
                             </div>
                         </div>
-                        <div className="px-4 mt-8">
-                            <button type="button"
-                                    className="py-2 px-4  bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ">
-                               FLIP
-                            </button>
+                    </div>
+                </div>
+            </div>
+            )}
+            <div
+                className="overflow-scroll h-96 bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <div className="overflow-hidden">
+
+                        <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-3xl max-h-full object-cover">
+                            <div className="py-8">
+                                <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
+                                    <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                                        <table className="min-w-full leading-normal">
+                                            <thead>
+                                            <tr>
+                                                {headers.map(header=>(
+
+                                                    <th scope="col"
+                                                        className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                                                        {header}
+                                                    </th>
+                                                ) )}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {csv_c_preview.map(thread=> (
+                                                    <tr>
+                                                        {thread.map(thread_data => (
+                                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                                <p className="text-gray-900 whitespace-no-wrap">
+                                                                    {thread_data}
+                                                                </p>
+                                                            </td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                        <p>Loaded max 50 results in preview</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-                    <div
-                        className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                        XYPlot
-                        <XYPlot height={300} width={300}>
-                            <VerticalGridLines />
-                            <HorizontalGridLines />
-                            <XAxis />
-                            <YAxis />
-                            <LineSeries data={data}/>
-                        </XYPlot>
-                    </div>
-
-            <div
-                className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                Bar Chart
-                <XYPlot
-                    height={300} width={300}
-                >
-                    <VerticalGridLines />
-                    <HorizontalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    <VerticalBarSeries
-                    data={[
-                        {
-                            x: 0,
-                            y: 10
-                        },
-                        {
-                            x: 1,
-                            y: 10.736971996796232
-                        },
-                        {
-                            x: 2,
-                            y: 11.568919214953606
-                        },
-                        {
-                            x: 3,
-                            y: 13.023412634113066
-                        },
-                        {
-                            x: 4,
-                            y: 13.915508901097654
-                        },
-                        {
-                            x: 5,
-                            y: 13.075480299944838
-                        },
-                        {
-                            x: 6,
-                            y: 14.878085002444518
-                        },
-                        {
-                            x: 7,
-                            y: 13.712441128740451
-                        },
-                        {
-                            x: 8,
-                            y: 16.438924113583248
-                        }
-                    ]}
-                    style={{}}
-                />
-            </XYPlot>
-            </div>
-            <div
-                className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                Cluster Graph
-            <XYPlot
-                height={300} width={300}
-            >
-                <VerticalGridLines />
-                <HorizontalGridLines />
-                <XAxis />
-                <YAxis />
-                <MarkSeries
-                    data={[
-                        {
-                            size: 19.73547988351014,
-                            x: 1.4869930341672877,
-                            y: 18.45394161173449
-                        },
-                        {
-                            size: 13.833615529455372,
-                            x: 4.8438365637594565,
-                            y: 12.630268068799086
-                        },
-                        {
-                            size: 16.908505978023996,
-                            x: 0.9621195361984491,
-                            y: 3.578501973069652
-                        },
-                        {
-                            size: 15.196105634242354,
-                            x: 2.1608044817816063,
-                            y: 19.214940934587997
-                        },
-                        {
-                            size: 13.71158645944051,
-                            x: 15.874908642614125,
-                            y: 4.281338237175927
-                        },
-                        {
-                            size: 5.155377434626554,
-                            x: 6.521669902915175,
-                            y: 14.244565540374559
-                        },
-                        {
-                            size: 7.473577414116168,
-                            x: 9.083214615707988,
-                            y: 0.5675223561823528
-                        },
-                        {
-                            size: 13.127809421418316,
-                            x: 8.559540497658897,
-                            y: 9.539159655010971
-                        },
-                        {
-                            size: 18.28328279101172,
-                            x: 1.8130378126336666,
-                            y: 6.767976642937963
-                        },
-                        {
-                            size: 10.857101073539901,
-                            x: 9.21885622511753,
-                            y: 5.990248218670051
-                        },
-                        {
-                            size: 16.381562731313053,
-                            x: 15.397964299698025,
-                            y: 1.6640757717686316
-                        },
-                        {
-                            size: 5.767463094777702,
-                            x: 11.77897786994018,
-                            y: 0.5939380606744882
-                        },
-                        {
-                            size: 16.72480320515451,
-                            x: 13.811622940401831,
-                            y: 19.85701671555098
-                        },
-                        {
-                            size: 13.644559651161511,
-                            x: 19.573690688220104,
-                            y: 10.321225968462995
-                        },
-                        {
-                            size: 16.752269860543656,
-                            x: 4.528728213780491,
-                            y: 16.94904267218839
-                        },
-                        {
-                            size: 8.98412159948651,
-                            x: 1.3082079539494584,
-                            y: 10.105954479508078
-                        },
-                        {
-                            size: 7.795517396846204,
-                            x: 4.8237647929323195,
-                            y: 0.2818910423399723
-                        },
-                        {
-                            size: 10.530956301192495,
-                            x: 2.526842259588966,
-                            y: 0.43342555993676424
-                        },
-                        {
-                            size: 9.998164443180448,
-                            x: 13.394565334081355,
-                            y: 12.24623986257578
-                        },
-                        {
-                            size: 19.39128228099606,
-                            x: 0.680916482306555,
-                            y: 18.922118077952717
-                        },
-                        {
-                            size: 6.309949549477915,
-                            x: 2.0981631278471657,
-                            y: 10.689378013006007
-                        }
-                    ]}
-                />
-            </XYPlot>
-            </div>
-            <div
-                className=" h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                Pie Chart
-                <RadialChart
-                    width={300}
-                    height={300}
-                    data={[
-                        {
-                            angle: 12,
-                            label: 'Hacking'
-                        },
-                        {
-                            angle: 23,
-                            label: 'Skyrim'
-                        },
-                        {
-                            angle: 29,
-                            label: 'Cyberpunk'
-                        },
-                        {
-                            angle: 26,
-                            label: 'Minecraft'
-                        },
-                        {
-                            angle: 14,
-                            label: 'Fallout'
-                        }
-                    ]}
-                    labelsRadiusMultiplier={1.1}
-                    labelsStyle={{
-                        fontSize: 12
-                    }}
-                    showLabels
-                />
-            </div>
-
-            <div
-                className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                Network Graph
-                <Graph
-                    graph={graph}
-                    options={options}
-                    events={events}
-                />
-
-            </div>
-            <div
-                className="h-96 w-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                <div className="force-directed-example">
-                    Force Graph
-                    <ForceDirectedGraph
-                        data={LesMisData}
-                        height={300}
-                        width={300}
-                        animation
-                        strength={45}
-                    />
+                <div>
+                    <iframe src="https://embed.deepnote.com/22344813-5c7a-4a97-ab33-49ce3f826a29/1b1fa759-aa3b-4a45-b755-1473c43e8814/00013-77cb1b8e-d4a1-4d60-9dc5-395928be09f2?height=653" height="653" width="500"/>
                 </div>
-            </div>
-
-            <div
-                className="h-96 w-1/2 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-
-                Topics Found
-
-                <Table rows={rows} />
-            </div>
-            <div
-                className="h-96 m-auto bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-
-                Text Summary
-
-
-                <List rows={
-
-                    [
-                    createSummaries('Mark Wall', "The best toolkit",'31/12/2020'  ),
-                    createSummaries('Jessie Simpson', "Braindead science needed to make mods",'31/12/2020'  )
-                    ]
-                }/>
-            </div>
-
-
-            </div>
+        </div>
 
 
     )

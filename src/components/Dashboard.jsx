@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import Sidebar from './Sidebar'
 
+import { useDispatch} from "react-redux";
+import {selectModeQuery, selectCSV} from "../features/mode/modeSlice";
+import {useSelector} from "react-redux";
 import Results from "../features/mode/Results";
 
 
 const Dashboard = () => {
 
+    const {active} = useSelector(selectModeQuery)
     const [currentTime, setCurrentTime] = useState(0);
 
     useEffect(() => {
@@ -24,7 +28,9 @@ const Dashboard = () => {
 
         <div className="flex w-full bg-gray-800 " >
             <Sidebar/>
-            <Results/>
+            {active &&
+                <Results/>
+            }
         </div>
         </div>
             </>
