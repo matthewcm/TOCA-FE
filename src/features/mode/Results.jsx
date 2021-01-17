@@ -1,10 +1,13 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 
 import {selectModeQuery, selectCSV} from "./modeSlice";
 import {useSelector} from "react-redux";
 import {readString} from "react-papaparse";
 
 const Results = () => {
+
+    const [sentimentData, setSentimentData] = useState(null)
+
 
     console.log(selectModeQuery)
     const {mode, query, search, active}  = useSelector(selectModeQuery)
@@ -15,6 +18,19 @@ const Results = () => {
     const csv_read = readString(csv);
     const [headers, ...csv_content] = csv_read.data
     console.log(csv_content)
+
+    const csv_c_preview = csv_content.slice(0, 50)
+
+    useEffect(() => {
+        fetch('/do', {
+            method: 'POST',
+            body: csv
+        })
+            .then(res => res.json())
+            .then(data => {
+                setSentimentData(data)
+            })
+    }, [csv])
 
 
     const MAX_LENGTH = 250;
@@ -61,9 +77,81 @@ const Results = () => {
                 </div>
             </div>
 
+            {sentimentData &&(
+
             <div
-                    className="overflow-scroll w-96 h-96 bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
-                    <div className="overflow-hidden">
+                className="overflow-scroll h-96 bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <div className="overflow-hidden">
+
+                    <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-3xl max-h-full object-cover">
+                        <div className="py-8">
+                            <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
+                                <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                                    <table className="min-w-full leading-normal">
+                                        <thead>
+                                        <tr>
+                                            {sentimentData.headers.map(header=>(
+
+                                                <th scope="col"
+                                                    className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                                                    {header}
+                                                </th>
+                                            ) )}
+                                            {Object.keys(sentimentData.data[0].sentiment).map(key => (
+                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                    <p className="text-gray-900 whitespace-no-wrap">
+                                                        {key}
+                                                    </p>
+                                                </td>
+                                            ))}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {sentimentData.data.map(dt=> {
+
+                                            let styllez = "bg-white"
+                                            if (dt.sentiment['compound'] > 0){
+                                                styllez = "bg-green-50"
+                                            }else if (dt.sentiment['compound'] < 0){
+                                                styllez = "bg-red-50"
+                                            }
+
+                                            return (
+
+
+                                                <tr className={styllez}>
+                                                    {dt.content.map(thread_data => (
+                                                        <td className="px-5 py-5 border-b border-gray-200 text-sm">
+                                                            <p className="text-gray-900 whitespace-no-wrap">
+                                                                {thread_data}
+                                                            </p>
+                                                        </td>
+                                                    ))}
+
+                                                    {Object.keys(dt.sentiment).map(key => (
+                                                        <td className="px-5 py-5 border-b border-gray-200  text-sm">
+                                                            <p className="text-gray-900 whitespace-no-wrap">
+                                                                {dt.sentiment[key]}
+                                                            </p>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            )
+                                        })}
+
+                                        </tbody>
+                                    </table>
+                                    <p>Loaded max 50 results in preview</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            )}
+            <div
+                className="overflow-scroll h-96 bg-white border-t-4 rounded border-indigo-500 dark:bg-gray-800 shadow text-center p-4">
+                <div className="overflow-hidden">
 
                         <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-3xl max-h-full object-cover">
                             <div className="py-8">
@@ -82,7 +170,7 @@ const Results = () => {
                                             </tr>
                                             </thead>
                                             <tbody>
-                                                {csv_content.map(thread=> (
+                                                {csv_c_preview.map(thread=> (
                                                     <tr>
                                                         {thread.map(thread_data => (
                                                             <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -92,10 +180,10 @@ const Results = () => {
                                                             </td>
                                                         ))}
                                                     </tr>
-
                                                 ))}
                                             </tbody>
                                         </table>
+                                        <p>Loaded max 50 results in preview</p>
                                     </div>
                                 </div>
                             </div>
