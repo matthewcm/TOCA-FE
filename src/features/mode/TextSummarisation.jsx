@@ -15,12 +15,11 @@ const TextSummarisation = () => {
 
     const [datasetMode, setDatasetMode] = useState(null);
 
-    const onSearchChange = e => setSearch(e.target.value)
     const onQueryChange = e => setQuery(e.target.value)
 
     const onSubmit = () => {
-        console.log(search, query)
-        if (search && query){
+        console.log( query)
+        if (query){
             dispatch(
                 summaryQuery({
                     search,
@@ -107,24 +106,24 @@ const TextSummarisation = () => {
 
                 </div>
             </div>
-            <div className="pb-4">
-                <label htmlFor="email" className="text-sm block font-bold  pb-2">Subreddit source</label>
-                <input value={search} onChange={onSearchChange} type="email" name="email" id="" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " placeholder="r/hacking"/>
-            </div>
+            {/*<div className="pb-4">*/}
+            {/*    <label htmlFor="email" className="text-sm block font-bold  pb-2">Subreddit source</label>*/}
+            {/*    <input value={search} onChange={onSearchChange} type="email" name="email" id="" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " placeholder="r/hacking"/>*/}
+            {/*</div>*/}
             <div  className="pb-4">
-                <label htmlFor="password" className="text-sm block font-bold pb-2">Query</label>
-                <input value={query} onChange={onQueryChange} type="password" name="email" id="" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300" placeholder="Enter Search Query"/>
+                <label htmlFor="query" className="text-sm block font-bold pb-2">Query</label>
+                <input value={query} onChange={onQueryChange} type="text" name="query" id="" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300" placeholder="Enter Search Query"/>
             </div>
 
-            <label className="flex items-center space-x-3">
-                <input type="checkbox" name="checked-demo"
-                       onChange={onQueryChange}
-                       className="form-tick appearance-none bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                       value="1"/>
-                <span className="text-gray-700 dark:text-white font-normal">
-                Extreme Summary
-        </span>
-            </label>
+            {/*<label className="flex items-center space-x-3">*/}
+                {/*<input type="checkbox" name="checked-demo"*/}
+                {/*       onChange={onQueryChange}*/}
+                {/*       className="form-tick appearance-none bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"*/}
+                {/*       value="1"/>*/}
+                {/*<span className="text-gray-700 dark:text-white font-normal">*/}
+                {/*Extreme Summary*/}
+        {/*</span>*/}
+        {/*    </label>*/}
 
             <div>
                 <button onClick={onSubmit}
