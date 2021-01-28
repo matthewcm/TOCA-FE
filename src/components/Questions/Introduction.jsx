@@ -13,23 +13,17 @@ import TextToCSV from "../../features/mode/TextToCSV";
 import URLToCSV from "../../features/mode/URLToCSV";
 import FileToCSV from "../../features/mode/FileToCSV";
 import ExampleToCSV from "../../features/mode/ExampleToCSV";
+import Lda from "../../features/mode/Lda";
+import Preprocess from "../../features/mode/Preprocess";
 
 const Introduction = () => {
     const dispatch = useDispatch()
 
     const {mode, modeActive, csvActive} = useSelector(selectModeQuery)
 
-    const [datasetMode, setDatasetMode] = useState(null);
-    const [stopwords, setStopwords] = useState(null);
-    const [pHeaders, setPHeaders] = useState({});
-    const csv = useSelector(selectCSV)
-    console.log(csv)
+    console.log(mode)
 
-    let headers = null;
-    if (csv){
-        const csv_read = readString(csv);
-        [headers] = csv_read.data
-    }
+    const [datasetMode, setDatasetMode] = useState(null);
 
 
     const styles = {
@@ -52,31 +46,13 @@ const Introduction = () => {
         }))
     }
 
-    const onPrepareSubmit = () => {
-        dispatch(setPreparations({
-            headers: pHeaders,
-            stopwords
-        }))
-    }
-    const onStopwordsChange = (e) => {
-        console.log(e)
-        setStopwords(e.target.value)
-    }
-    const dateHeaderChange = (e) => {
-        setPHeaders({...pHeaders, date: e.target.value})
-    }
-    const contentHeaderChange = (e) => {
-        setPHeaders({...pHeaders, content: e.target.value})
-    }
-    const authorHeaderChange = (e) => {
-        setPHeaders({...pHeaders, author: e.target.value})
-    }
+
 
     const handleDataTextClick = (mode) => {
         setDatasetMode(mode)
     }
 
-    let modeCode = <div> Select Mode for CSV</div>
+    let modeCode
 
     switch (datasetMode){
         case 'TEXT':
@@ -177,14 +153,14 @@ const Introduction = () => {
             <a
                 onClick={() => handleMode('semantic')}
                 className={`${styles.semantic} m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-            Semantic Analysis
-        </a>
-        <a
-            onClick={() => handleMode('sna')}
-            className={`${styles.sna} m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-            social network analysis
-        </a>
-    </div>
+                Semantic Analysis
+            </a>
+            <a
+                onClick={() => handleMode('sna')}
+                className={`${styles.sna} m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                social network analysis
+            </a>
+        </div>
     )
 
     return (
@@ -202,11 +178,11 @@ const Introduction = () => {
                             // onEnter={() => setShowButton(false)}
                             // onExited={() => setShowButton(true)}
                         >
-                                <div>
-                        <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-                            What form of analysis would you like to perform?
+                            <div>
+                                <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
+                                    What form of analysis would you like to perform?
 
-                        </h2>
+                                </h2>
                                 {ModeOptions}
                             </div>
                         </CSSTransition>
@@ -228,70 +204,15 @@ const Introduction = () => {
                                 {CSVOptions}
 
                                 <div
-                                className="text-center max-w-3xl m-auto"
+                                    className="text-center max-w-3xl m-auto"
                                 >
 
                                     {datasetMode && modeCode}
                                 </div>
                             </div>
                         </CSSTransition>
-                        <CSSTransition
-                            in={modeActive & csvActive }
-                            timeout={{exit:500, enter:2000}}
-                            classNames="preprocessing"
-                            unmountOnExit
-                            // onEnter={() => setShowButton(false)}
-                            // onExited={() => setShowButton(true)}
-                        >
-                            <div>
-                                <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-                                    Preprocess your data
-                                </h2>
-
-
-                                <div
-                                    className="text-center max-w-3xl m-auto pt-4"
-                                >
-                                    <h2 className="max-w-3xl text-2xl md:text-1xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-                                        Step 1: Select Data Columns
-                                    </h2>
-                                    <div className=" bg-white shadow-md rounded px-8 pt-4">
-                                        <div className="pb-4">
-                                            <label htmlFor="dateHeader" className="text-sm block font-bold  pb-2">Select Date</label>
-                                            <select name="dateHeader" onChange={dateHeaderChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " >
-                                                {headers && headers.map(header => (<option value={header}> {header} </option>))}
-                                            </select>
-                                            <label htmlFor="authorHeader" className="text-sm block font-bold  pb-2">Select Author</label>
-                                            <select name="authorHeader" onChange={authorHeaderChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " >
-                                                {headers && headers.map(header => (<option value={header}> {header} </option>))}
-                                            </select>
-                                            <label htmlFor="contentHeader" className="text-sm block font-bold  pb-2">Select Content</label>
-                                            <select name="contentHeader" onChange={contentHeaderChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 " >
-                                                {headers && headers.map(header => (<option value={header}> {header} </option>))}
-                                            </select>
-
-                                        </div>
-
-                                    <h2 className="max-w-3xl text-2xl md:text-1xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-                                        Step 2: Prepare stop words
-                                    </h2>
-                                        <div className="pb-4">
-                                            <label htmlFor="stopwords" className="text-sm block font-bold  pb-2">Provide stopwords</label>
-                                            <textarea cols={"40"} rows={'5'} value={stopwords} onChange={onStopwordsChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
-                                                      placeholder="Enter stopwords here (, comma separated)"/>
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full m-auto">
-                                        <button onClick={onPrepareSubmit}
-                                                className="m-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                                            Prepare
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </CSSTransition>
+                        <Preprocess/>
+                        { modeActive && csvActive && <Lda/>}
                         <CSSTransition
                             in={modeActive && csvActive}
                             timeout={{exit:500, enter:2000}}
@@ -302,12 +223,12 @@ const Introduction = () => {
                         >
                             <div>
                                 {
-                                   modeActive && csvActive && <Results/>
+                                    modeActive && csvActive && <Results/>
                                 }
-                            <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-                                Would you like to do anymore types of analysis?
+                                <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
+                                    Would you like to do anymore types of analysis?
 
-                            </h2>
+                                </h2>
 
                                 {ModeOptions}
                             </div>

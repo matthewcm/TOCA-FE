@@ -43,7 +43,7 @@ describe('mode reducer', () => {
                             author: 'auth',
                             content: 'conti'
                         },
-                        stopwords: "hi, stop, well, if, a, says"
+                        stopwords: "hi, stop, well, if, a, says",
                     }
                 }
             )
@@ -54,7 +54,8 @@ describe('mode reducer', () => {
                 author: 'auth',
                 content: 'conti'
             },
-            stopwords: "hi, stop, well, if, a, says"
+            stopwords: "hi, stop, well, if, a, says",
+            prepareActive: true
         }) })
 
     it('should handle SUMMARY_QUERY', () => {
@@ -93,18 +94,18 @@ describe('mode reducer', () => {
                 {
                     type: setCSV.type,
                     payload:{
-                        csv: 'csv possibly'
+                        csv: 'csv,possibly\nstart,here'
                     }
                 }
             ).csv
-        ).toEqual('csv possibly')
+        ).toEqual([['csv', 'possibly'], ['start', 'here']])
 
     })
     it ('should select mode, grab mode from redux store', () => {
         expect(selectModeQuery({mode:'SUMMARY'})).toEqual('SUMMARY')
     })
     it ('should select CSV, grab csv from redux store', () => {
-        expect(selectCSV({mode:{csv:'csv possibly'}})).toEqual('csv possibly')
+        expect(selectCSV({mode:{csv:'csv, start\n start, here'}})).toEqual('csv possibly')
     })
 
     // it should allow for redux for DATASET
