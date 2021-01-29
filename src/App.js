@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Doc from "./components/Doc";
+import Introduction from "./components/Questions/Introduction";
 
 function App() {
     return (
@@ -19,7 +20,12 @@ function App() {
                 <Switch>
                     <Route
                         exact
-                        path={["/", "/dashboard"]}
+                        path={[ "/"]}
+                        component={Introduction}
+                    />
+                    <Route
+                        exact
+                        path={[ "/dashboard"]}
                         component={Dashboard}
                     />
                     <Route

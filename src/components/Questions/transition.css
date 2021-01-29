@@ -1,0 +1,58 @@
+.starter-enter {
+    opacity: 0;
+}
+.starter-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+.starter-exit {
+    opacity: 1;
+}
+.starter-exit-active {
+    opacity: 0;
+    transform: translateY(-400%);
+    transition: opacity 1000ms, transform 1000ms;
+}
+.more-appear{
+    opacity: 0;
+    transform: translateY(400%);
+}
+
+.more-appear-active{
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 900ms, transform 900ms;
+}
+.more-enter{
+    opacity: 0;
+    transform: translateY(400%);
+}
+.more-enter-active{
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 900ms, transform 900ms;
+}
+.more-exit {
+    opacity: 1;
+}
+.more-exit-active {
+    opacity: 0;
+    transition: opacity 300ms, transform 300ms;
+}
+.dataset-enter {
+    opacity: 0;
+}
+.dataset-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+.dataset-exit {
+    opacity: 1;
+}
+.dataset-exit-active {
+    opacity: 0;
+    transform: translateY(-400%);
+    transition: opacity 1000ms, transform 1000ms;
+}
