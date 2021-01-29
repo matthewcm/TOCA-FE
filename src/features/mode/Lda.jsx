@@ -9,39 +9,55 @@ const Lda = () => {
 
     const {mode, modeActive, csvActive,csv, prepareActive} = useSelector(selectModeQuery)
     const [topicK, setTopicK] = useState(null);
+    const [topicKS, setTopicKS] = useState(null);
     const [plot,setPlot] = useState(null);
 
     const onTopicK = (e) => {
         setTopicK(e.target.value)
     }
     const onSubmit= () => {
-        console.log('beep')
+        setTopicKS(topicK)
     }
 
-    console.log(csv)
+    // console.log(csv)
 
-    useEffect(async () => {
+    useEffect(() => {
+
+        console.log('TOPICS')
+        console.log(topicK)
+        const getLda = async () => {
+            await Axios.get(`/lda?topics=${topicK}`)
+                .then(response => {
+
+                        //            console.log(data)
+                        console.log(response.data)
+                        embed.embed_item(response.data)
+                        //            setPlot(embed.embed_item(data))
+                    }
+                )
+        }
+
+        if (topicKS){
+            getLda()
+        }
+
+    }, [topicKS])
+
+    useEffect(() => {
         console.log('uploading')
         console.log(csv)
 
-        await Axios.post(
-            "/upload_csv",
-            csv,
-        ).catch(err => console.log(err))
+        const postCSV = async () => {
+            await Axios.post(
+                "/upload_csv",
+                csv,
+            ).catch(err => console.log(err))
 
-        await Axios.get(
-                "/lda",{
-                    withCredentials: true
-                }
-            )
-                .then(data => {
-                    console.log(data)
-                    return embed.embed_item(data)
-                    // setPlot(embed.embed_item(data))
-                })
-                .catch(err => console.log(err))
+        }
 
-        )
+
+        // postCSV()
+
 
 
     }, [])
@@ -90,7 +106,7 @@ const Lda = () => {
 
                         <label htmlFor="k number of topics topics" className="text-sm block font-bold  pb-2">Provide number of topics</label>
                         <input  value={topicK} type="number" onChange={onTopicK} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
-                                placeholder='20'/>
+                                min="1" max="100" placeholder='20'/>
 
                     </div>
 

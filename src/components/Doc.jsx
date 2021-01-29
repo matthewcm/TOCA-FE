@@ -6,7 +6,7 @@ const Doc = () => (
         <div className="container mx-auto px-6 p-6 bg-white dark:bg-gray-800">
             <div className="mb-16 text-center">
                 <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">
-                    Features
+                    Documentation
                 </h2>
                 <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
                     Toolkit for Online Community Analytics
@@ -23,12 +23,11 @@ const Doc = () => (
                             </path>
                         </svg>
                         <div className="ml-4 text-xl">
-                            Increase sales
+                            Increase Visualisations
                         </div>
                     </div>
                     <p className="leading-loose text-gray-500 dark:text-gray-200 text-md">
-                        Receive more sales by selling across multple sales channels instead of just having a single
-                        point of entry.
+                        Understand your dataset further through available data visualisations
                     </p>
                 </div>
                 <div className="w-full border-b md:w-1/2 lg:w-1/3 lg:border-r p-8">
@@ -40,12 +39,12 @@ const Doc = () => (
                             </path>
                         </svg>
                         <div className="ml-4 text-xl">
-                            Overlays
+                            Number of topics
                         </div>
                     </div>
                     <p className="leading-loose text-gray-500 dark:text-gray-200 text-md">
-                        Apply beautiful overlays to every product image distributed through our platform. A visual
-                        touch.
+
+                        Set the number of topics accordingly to the dataset, use the provided perplexity and coherency to drive a suitable number of topics
                     </p>
                 </div>
                 <div className="w-full border-b md:w-1/2 md:border-r lg:w-1/3 lg:border-r-0 p-8">
@@ -57,12 +56,15 @@ const Doc = () => (
                             </path>
                         </svg>
                         <div className="ml-4 text-xl">
-                            Control
+                            Stopwords
                         </div>
                     </div>
                     <p className="leading-loose text-gray-500 dark:text-gray-200 text-md">
-                        Apply filters and control which products to sell on each sales channel. E.g. exclude products
-                        with low margins.
+
+                        Add additional stopwords than the program's default.
+                        Currently uses stopwords from <a className="text-blue-500" target="_blank" href="https://spacy.io/models/en">spacy en stopwords list.</a>
+
+                        As well as some generic Reddit stopwords
                     </p>
                 </div>
                 <div className="w-full border-b md:w-1/2 lg:w-1/3 lg:border-r lg:border-b-0 p-8">
@@ -74,12 +76,11 @@ const Doc = () => (
                             </path>
                         </svg>
                         <div className="ml-4 text-xl">
-                            Mapping
+                            Reddit
                         </div>
                     </div>
                     <p className="leading-loose text-gray-500 dark:text-gray-200 text-md">
-                        Map product categories with each sales channels&#x27; own categories and achieve better results
-                        and lower costs.
+                        Create datasets from Reddit through this application if you don't already have one available
                     </p>
                 </div>
                 <div className="w-full border-b md:w-1/2 md:border-r md:border-b-0 lg:w-1/3 lg:border-b-0 p-8">
@@ -91,12 +92,11 @@ const Doc = () => (
                             </path>
                         </svg>
                         <div className="ml-4 text-xl">
-                            Fill the missing
+                            Make predictions
                         </div>
                     </div>
                     <p className="leading-loose text-gray-500 dark:text-gray-200 text-md">
-                        Modify products with extra properties and achieve the maximum output for each installed sales
-                        channel.
+                        Make predictions of future topics, benefitial for marketting or understanding general themes and social behaviours within communities.
                     </p>
                 </div>
                 <div className="w-full md:w-1/2 lg:w-1/3 p-8">
@@ -108,12 +108,12 @@ const Doc = () => (
                             </path>
                         </svg>
                         <div className="ml-4 text-xl">
-                            Dynamic Texts
+                            Understand how topics are connected
                         </div>
                     </div>
                     <p className="leading-loose text-gray-500 dark:text-gray-200 text-md">
-                        Build unique product titles and descriptions instead of spending days manually editing each
-                        product.
+                        Draw connections between separate topics, and how conversations within different communities begin to converge to other topics
+
                     </p>
                 </div>
             </div>
