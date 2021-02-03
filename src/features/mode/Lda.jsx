@@ -5,6 +5,7 @@ import {selectModeQuery} from "./modeSlice";
 import {embed} from '@bokeh/bokehjs'
 import Axios from 'axios'
 import ReactLoading from 'react-loading'
+import tabledf from './table-df.json'
 
 const Lda = () => {
 
@@ -59,7 +60,7 @@ const Lda = () => {
         }
 
         if (loadVisual && topicKS){
-            // getLda()
+            getLda()
             getTopics()
         }
 
@@ -85,8 +86,8 @@ const Lda = () => {
         }
 
         if (trainLda && topicKS){
-            // trainLda()
-            //     .then(() => {setLoadVisual(false)}).catch(e => console.log(e))
+            trainLda()
+                .then(() => {setLoadVisual(false)}).catch(e => console.log(e))
 
         }
 
@@ -209,22 +210,26 @@ const Lda = () => {
                 <div className="py-8">
                     <div className="">
                         <div className="">
-                            <table className="max-w-6xl leading-normal table-fixed">
+                            <table className="m-auto max-w-6xl leading-normal text-center text-2xl">
                                 <thead>
                                 <tr>
                                     {topicDocs && topicDocs.columns.map(column=>(
 
-                                        <th className="w-1/4">
+                                        <th className="">
                                             {column}
                                         </th>
                                     ) )}
                                 </tr>
 
-                                {topicDocs && topicDocs.data.slice(0,4).map(dt => (
-                                    <tr>
-                                        {dt.map(d => (
-                                            <td className="overflow-hidden w-5 break-words max-w-1/6">
-                                                    {d}
+                                {topicDocs && topicDocs.data.slice(0,200).map(dt => (
+                                    <tr className="border-b-2 border-gray-200" style={{backgroundColor: `${dt[2]}`}}>
+                                        {dt.map((d, i) => (
+                                            <td className="border-l-2 border-gray-200">
+                                                { i === 1 ?
+                                                    d.map(wo => <span>{wo}, </span>)
+                                                    :
+                                                    d
+                                                }
                                             </td>
                                         )
 
