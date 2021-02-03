@@ -4,44 +4,94 @@ import {useSelector} from "react-redux";
 import {selectModeQuery} from "./modeSlice";
 import {embed} from '@bokeh/bokehjs'
 import Axios from 'axios'
+import ReactLoading from 'react-loading'
+import tabledf from './table-df.json'
 
 const Lda = () => {
 
     const {mode, modeActive, csvActive,csv, prepareActive} = useSelector(selectModeQuery)
     const [topicK, setTopicK] = useState(null);
     const [topicKS, setTopicKS] = useState(null);
-    const [plot,setPlot] = useState(null);
+    const [plotActive,setPlotActive] = useState(false);
 
+    const [trainLda, setTrainLda] = useState(false);
+    const [loadVisual, setLoadVisual] = useState(false);
+
+    const [topicDocs, setTopicDocs ] = useState(null)
     const onTopicK = (e) => {
         setTopicK(e.target.value)
     }
     const onSubmit= () => {
         setTopicKS(topicK)
+        setTrainLda(true)
+    }
+    const onLoadVisual = () => {
+        setTopicKS(topicK)
+        setLoadVisual(true)
     }
 
     // console.log(csv)
-
-    useEffect(() => {
-
-        console.log('TOPICS')
-        console.log(topicK)
+    useEffect(( ) => {
         const getLda = async () => {
+            console.log('GET LDA')
             await Axios.get(`/lda?topics=${topicK}`)
                 .then(response => {
 
                         //            console.log(data)
                         console.log(response.data)
                         embed.embed_item(response.data)
+                        setPlotActive(true)
+                        setLoadVisual(false)
+                        //            setPlot(embed.embed_item(data))
+                    }
+                )
+        }
+        const getTopics = async () => {
+            return await Axios.get(`/lda-topic-table?topics=${topicK}`)
+                .then(response => {
+
+                        //            console.log(data)
+                    console.log(response.data)
+                    setTopicDocs(response.data)
+                        // embed.embed_item(response.data)
                         //            setPlot(embed.embed_item(data))
                     }
                 )
         }
 
-        if (topicKS){
+        if (loadVisual && topicKS){
             getLda()
+            getTopics()
         }
 
-    }, [topicKS])
+    }, [loadVisual])
+
+    useEffect(() => {
+
+        console.log('TOPICS')
+        console.log(topicK)
+        const trainLda = async () => {
+            console.log('train LDA')
+            await Axios.get(`/train-lda?topics=${topicK}`)
+                .then(response => {
+
+                        //            console.log(data)
+                        console.log(response.data)
+                        embed.embed_item(response.data)
+                        setPlotActive(true)
+                    setTrainLda(false)
+                        //            setPlot(embed.embed_item(data))
+                    }
+                )
+        }
+
+        if (trainLda && topicKS){
+            trainLda()
+                .then(() => {setLoadVisual(false)}).catch(e => console.log(e))
+
+        }
+
+    }, [trainLda])
 
     useEffect(() => {
         console.log('uploading')
@@ -116,13 +166,108 @@ const Lda = () => {
                             className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
                             Apply tweaks
                         </button>
+                        <button
+                            onClick={onLoadVisual}
+                            className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                            Load Visual
+                        </button>
                     </div>
                 </div>
 
             </div>
+            <div  id='mypot'>
+            </div>
 
-            <div id='myplot'>
-                RESULTS here bro
+            <div  id='myplot'>
+                {topicKS && !plotActive && (
+
+
+                    <div className="mt-4  m-4 m-auto mb-8 h-96 w-96 border-t-4 rounded border-indigo-500 shadow text-center p-4">
+                        <div className="text-2xl font-medium text-black dark:text-white">
+                            LDA Analysis Loading...
+                        </div>
+                        <div className="w-4/6 content-center flex flex-wrap justify-center m-auto  items-center align-middle overflow-hidden">
+
+                            <ReactLoading className="h-full w-full align-middle items-center justify-center content-center" type={'spin'} color={'blue'} height={'100%'} width={'100%'} />
+                        </div>
+                    </div>
+
+                )}
+                {/*{topicKS && !plotActive && (*/}
+
+
+                {/*    <div className="mt-4  m-4 m-auto mb-8 h-96 w-96 border-t-4 rounded border-indigo-500 shadow text-center p-4">*/}
+                {/*        <div className="text-2xl font-medium text-black dark:text-white">*/}
+                {/*            LDA Analysis Loading...*/}
+                {/*        </div>*/}
+                {/*        <div className="w-4/6 content-center flex flex-wrap justify-center m-auto  items-center align-middle overflow-hidden">*/}
+
+                {/*            <ReactLoading classname="h-full w-full align-middle items-center justify-center content-center" type={'spin'} color={'blue'} height={'100%'} width={'100%'} />*/}
+                {/*        </div>*/}
+                {/*    </div>*/}
+
+                {/*)}*/}
+                <div className="py-8">
+                    <div className="">
+                        <div className="">
+                            <table className="m-auto max-w-6xl leading-normal text-center text-2xl">
+                                <thead>
+                                <tr>
+                                    {topicDocs && topicDocs.columns.map(column=>(
+
+                                        <th className="">
+                                            {column}
+                                        </th>
+                                    ) )}
+                                </tr>
+
+                                {topicDocs && topicDocs.data.slice(0,200).map(dt => (
+                                    <tr className="border-b-2 border-gray-200" style={{backgroundColor: `${dt[2]}`}}>
+                                        {dt.map((d, i) => (
+                                            <td className="border-l-2 border-gray-200">
+                                                { i === 1 ?
+                                                    d.map(wo => <span>{wo}, </span>)
+                                                    :
+                                                    d
+                                                }
+                                            </td>
+                                        )
+
+                                        )}
+                                    </tr>
+                                ))}
+                                </thead>
+                                <tbody>
+
+                                {/*    return (*/}
+
+
+                                {/*        <tr className={styllez}>*/}
+                                {/*            {dt.content.map(thread_data => (*/}
+                                {/*                <td className="max-w-xl px-5 py-5 border-b border-gray-200 text-sm">*/}
+                                {/*                    <p className="text-gray-900 whitespace-no-wrap">*/}
+                                {/*                        {thread_data}*/}
+                                {/*                    </p>*/}
+                                {/*                </td>*/}
+                                {/*            ))}*/}
+
+                                {/*            {Object.keys(dt.sentiment).map(key => (*/}
+                                {/*                <td className="px-5 py-5 border-b border-gray-200  text-sm">*/}
+                                {/*                    <p className="text-gray-900 whitespace-no-wrap">*/}
+                                {/*                        {dt.sentiment[key]}*/}
+                                {/*                    </p>*/}
+                                {/*                </td>*/}
+                                {/*            ))}*/}
+                                {/*        </tr>*/}
+                                {/*    )*/}
+                                {/*})}*/}
+
+                                </tbody>
+                            </table>
+                            <p>Loaded max 50 results in preview</p>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
