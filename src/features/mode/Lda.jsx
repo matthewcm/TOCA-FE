@@ -1,7 +1,7 @@
 import {CSSTransition} from "react-transition-group";
 import React, {useState, useEffect} from "react";
-import {useSelector} from "react-redux";
-import {selectModeQuery} from "./modeSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {selectModeQuery, setTopicNames as setTopicNamesR} from "./modeSlice";
 import {embed} from '@bokeh/bokehjs'
 import Axios from 'axios'
 import ReactLoading from 'react-loading'
@@ -10,6 +10,7 @@ import  ContentEditableDiv from 'react-contenteditable'
 
 const Lda = () => {
 
+    const dispatch = useDispatch()
     const {mode, modeActive, csvActive,csv, prepareActive} = useSelector(selectModeQuery)
     const [topicK, setTopicK] = useState(null);
     const [topicKS, setTopicKS] = useState(null);
@@ -44,7 +45,11 @@ const Lda = () => {
     }
 
     const topicNameSubmit = () =>{
-        console.log(topicNames)
+        dispatch(
+            setTopicNamesR({
+                topicNames: topicNames
+            })
+        )
     }
 
     // console.log(csv)
