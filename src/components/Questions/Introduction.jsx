@@ -27,7 +27,7 @@ const Introduction = () => {
 
 
     const styles = {
-        summarisation: mode.includes('summarisation') ? ' bg-gray-300': 'bg-transparent',
+        sentiment: mode.includes('sentiment') ? ' bg-gray-300': 'bg-transparent',
         semantic : mode.includes('semantic') ? ' bg-gray-300': 'bg-transparent',
         lda : mode.includes('lda') ? ' bg-gray-300': 'bg-transparent',
         convergence : mode.includes('convergence') ? ' bg-gray-300': 'bg-transparent',
@@ -136,9 +136,9 @@ const Introduction = () => {
     const ModeOptions = (
         <div className="flex items-center justify-center mt-4">
             <a
-                onClick={() => handleMode('summarisation')}
-                className={`${styles.summarisation} m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-                Text Summarisation
+                onClick={() => handleMode('sentiment')}
+                className={`${styles.sentiment} m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                Sentiment Analysis
             </a>
             <a
                 onClick={() => handleMode('lda')}
@@ -222,9 +222,6 @@ const Introduction = () => {
                             // onExited={() => setShowButton(true)}
                         >
                             <div>
-                                {
-                                    modeActive && csvActive && <Results/>
-                                }
                                 <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
                                     Would you like to do anymore types of analysis?
 
