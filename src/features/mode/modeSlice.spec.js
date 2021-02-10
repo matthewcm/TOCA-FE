@@ -1,4 +1,4 @@
-import mode, {setMode, setPreparations, summaryQuery, setCSV, selectModeQuery, selectCSV} from './modeSlice'
+import mode, {setMode, setPreparations, summaryQuery, setCSV, selectModeQuery, selectCSV, setTopicNames} from './modeSlice'
 
 describe('mode reducer', () => {
     it('should handle initial state', () => {
@@ -105,7 +105,22 @@ describe('mode reducer', () => {
         expect(selectModeQuery({mode:'SUMMARY'})).toEqual('SUMMARY')
     })
     it ('should select CSV, grab csv from redux store', () => {
-        expect(selectCSV({mode:{csv:'csv, start\n start, here'}})).toEqual('csv possibly')
+        expect(selectCSV({mode:{csv:'csv, start\n start, here'}})).toEqual('csv, start\n start, here')
+    })
+    it ('Should create topic number mapper', () => {
+        expect(mode(
+            {},
+            {
+                type: setTopicNames.type,
+                payload: {
+                    topicNames: {
+                        '0' : 'Hacking'
+                    }
+                }
+            }
+        ).topicNames).toEqual(
+            { '0' : 'Hacking' }
+        )
     })
 
     // it should allow for redux for DATASET

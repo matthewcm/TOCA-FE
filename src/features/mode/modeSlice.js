@@ -192,8 +192,8 @@ const stateForTesting = {
 
 const modeSlice = createSlice({
     name: 'mode',
-    initialState: stateForTesting,
-    // initialState: {mode:[]},
+    // initialState: stateForTesting,
+    initialState: {mode:[]},
     reducers: {
         setMode(state, action) {
             if (state.mode.length > 0){
@@ -221,6 +221,9 @@ const modeSlice = createSlice({
             state.headers = action.payload.headers
             state.stopwords = action.payload.stopwords
             state.prepareActive = true
+        },
+        setTopicNames(state, action) {
+            state.topicNames = action.payload.topicNames
         }
     }
 })
@@ -229,5 +232,5 @@ export const selectMode = state => state.mode.mode
 export const selectModeQuery = state => state.mode
 export const selectCSV = state => state.mode.csv
 
-export const {setMode ,summaryQuery, setCSV, setPreparations} = modeSlice.actions
+export const {setMode ,summaryQuery, setCSV, setPreparations, setTopicNames} = modeSlice.actions
 export default modeSlice.reducer
