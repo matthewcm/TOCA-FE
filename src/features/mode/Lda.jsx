@@ -53,6 +53,7 @@ const Lda = () => {
     }
 
     // console.log(csv)
+    // This should not be a use effect! Just a submit handler
     useEffect(( ) => {
         const getLda = async () => {
             console.log('GET LDA')
