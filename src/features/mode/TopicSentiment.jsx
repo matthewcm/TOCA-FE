@@ -1,0 +1,179 @@
+import {CSSTransition} from "react-transition-group";
+import React, {useState, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {selectModeQuery, setTopicNames as setTopicNamesR} from "./modeSlice";
+import {embed} from '@bokeh/bokehjs'
+import Axios from 'axios'
+import ReactLoading from 'react-loading'
+import tabledf from './table-df.json'
+import  ContentEditableDiv from 'react-contenteditable'
+
+import LineGraph from "../../components/LineGraph";
+const Sentiment = () => {
+
+    const dispatch = useDispatch()
+
+    const {mode, modeActive, csvActive,csv, prepareActive, topicNames:topicNamesS} = useSelector(selectModeQuery)
+    const [plotActive,setPlotActive] = useState(false);
+
+    const [sentiment, setSentiment] = useState(null)
+
+    const [topicNames, setTopicNames] = useState(topicNamesS || {});
+
+    console.log(topicNames)
+
+
+    // console.log(csv)
+    // This should not be a use effect! Just a submit handler
+    useEffect(( ) => {
+        console.log('uploading')
+        console.log(csv)
+
+        const postCSV = async () => {
+            await Axios.post(
+                "/upload_csv_2",
+                csv,
+            ).catch(err => console.log(err))
+
+        }
+
+        const getTopics = async () => {
+            return await Axios.post(
+                `/apply-to-trained-lda`,
+                csv,
+        )
+                .then(response => {
+
+                        console.log(response.data)
+                       setPlotActive(true)
+                        setSentiment(response.data)
+                    }
+                )
+        }
+
+            getTopics()
+
+    }, [])
+
+
+
+
+    return (
+        <div>
+        <CSSTransition
+            in={modeActive & csvActive & mode.includes('topic-sentiment') & prepareActive }
+            timeout={{exit:500, enter:2000}}
+            classNames="preprocessing"
+            unmountOnExit
+            // onEnter={() => setShowButton(false)}
+            // onExited={() => setShowButton(true)}
+        >
+            <div className="">
+                <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2 ">
+                    Topic Sentiment over time
+                </h2>
+
+
+                <div className="m-auto" id='mypot'>
+                </div>
+
+                <div className="m-auto flex justify-center" id='myplot'>
+                    {!plotActive && (
+
+
+                        <div className="mt-4  m-4 m-auto mb-8 h-96 w-96 border-t-4 rounded border-indigo-500 shadow text-center p-4">
+                            <div className="text-2xl font-medium text-black dark:text-white">
+                                Topic Sentiment Loading...
+                            </div>
+                            <div className="w-4/6 content-center flex flex-wrap justify-center m-auto  items-center align-middle overflow-hidden">
+
+                                <ReactLoading className="h-full w-full align-middle items-center justify-center content-center" type={'spin'} color={'blue'} height={'100%'} width={'100%'} />
+                            </div>
+                        </div>
+
+                    )}
+                </div>
+
+                {sentiment &&
+                <div className="py-8 w-full">
+                    <table className="m-auto max-w-6xl leading-normal text-center text-2xl">
+                        <thead>
+                        <tr>
+                            {Object.keys(sentiment[0]).map(column=>(
+
+                                <th className="">
+                                    {column}
+                                </th>
+                            ) )}
+                        </tr>
+
+                        {sentiment.slice(0,200).map(row => {
+
+                            return (
+
+                                <tr className={`border-b-2 border-gray-200`}>
+                                    {Object.keys(row).map(column => {
+                                        let styllez = "bg-white"
+
+                                        if (row['sentiment'] > 0.1) {
+                                            styllez = "bg-green-50"
+
+                                        }else if (row['sentiment'] < - 0.1) {
+                                            styllez = "bg-red-50"
+                                        }
+
+                                        let d = row[column]
+
+                                        if (column === "topic"){
+                                            d = topicNames[d]
+                                        }
+
+
+                                            return (
+
+                                                <td className={styllez}>
+                                                    {d}
+                                                </td>
+                                            )
+                                        }
+                                    )}
+                                </tr>
+                            )
+                        })}
+                        </thead>
+                    </table>
+
+                    <div className="text-2xl font-medium text-gray-800 dark:text-white">
+                        Sentiment Analysis Graphs
+                    </div>
+                    {
+                        Object.keys(topicNames).map(topicName => (
+                            <div className="overflow-hidden">
+                                <div className="text-2xl font-medium text-gray-800 dark:text-white">
+                                    Topic: {topicNames[topicName]}
+                                </div>
+
+                                <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-7xl max-h-full object-cover">
+                                    <div className="py-8">
+                                        <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
+                                            <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                                                <LineGraph data={sentiment} topic={topicName} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        ))
+                    }
+                </div>
+                }
+
+            </div>
+
+        </CSSTransition>
+        </div>
+    )
+
+}
+export default Sentiment

@@ -15,6 +15,9 @@ import FileToCSV from "../../features/mode/FileToCSV";
 import ExampleToCSV from "../../features/mode/ExampleToCSV";
 import Lda from "../../features/mode/Lda";
 import Preprocess from "../../features/mode/Preprocess";
+import FromReddit from "../../features/mode/FromReddit";
+import Sentiment from "../../features/mode/Sentiment";
+import TopicSentiment from "../../features/mode/TopicSentiment";
 
 const Introduction = () => {
     const dispatch = useDispatch()
@@ -52,6 +55,18 @@ const Introduction = () => {
         setDatasetMode(mode)
     }
 
+    const loadMode = () => {
+        console.log('HI')
+        console.log(mode)
+        switch (mode[0]){
+            case "lda": return <Lda/>
+            case "sentiment": console.log("hi"); return <Sentiment/>
+            case "topic-sentiment": console.log("hi"); return <TopicSentiment/>
+            case "convergence": return <div> Topic Convergence</div>
+
+        }
+    }
+
     let modeCode
 
     switch (datasetMode){
@@ -86,12 +101,7 @@ const Introduction = () => {
         case 'REDDIT':
             modeCode = (
                 <div className="pb-4">
-                    <div>
-                        ENTER SUBREDDIT / S
-                    </div>
-                    <div>
-                        OR ENTER QUERY's for ALL/ S
-                    </div>
+                    <FromReddit/>
                 </div>
             )
             break
@@ -151,9 +161,9 @@ const Introduction = () => {
                 Topic Convergence
             </a>
             <a
-                onClick={() => handleMode('semantic')}
+                onClick={() => handleMode('topic-sentiment')}
                 className={`${styles.semantic} m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-                Semantic Analysis
+                Topic Sentiment Analysis
             </a>
             <a
                 onClick={() => handleMode('sna')}
@@ -212,7 +222,7 @@ const Introduction = () => {
                             </div>
                         </CSSTransition>
                         <Preprocess/>
-                        { modeActive && csvActive && <Lda/>}
+                        { modeActive && csvActive && loadMode()}
                         <CSSTransition
                             in={modeActive && csvActive}
                             timeout={{exit:500, enter:2000}}

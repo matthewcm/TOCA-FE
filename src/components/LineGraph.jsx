@@ -11,16 +11,20 @@ import {
 } from 'react-vis';
 
 export default function LineGraph(props) {
-    const plots = props.data.data.map(row => {
+    const plots = props.data.filter(row => row.topic === props.topic).map(row => {
 
         return {
-            x: Date.parse(row.content[0]),
-            y: row.sentiment.compound
+            x: Date.parse(row.date),
+            y: row.sentiment
         }
     })
     console.log(plots)
     return (
         <XYPlot
+            yDomain={[
+                -1,
+                1
+            ]}
             width={1200}
             height={300}
             xType="time"

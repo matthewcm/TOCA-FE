@@ -5,7 +5,7 @@ import {readString} from "react-papaparse";
 
 const stateForTesting = {
     mode: [
-        'lda'
+        'topic-sentiment'
     ],
     modeActive: true,
     headers: {
@@ -187,13 +187,36 @@ const stateForTesting = {
     ],
     csvActive: true,
     stopwords: 'as, a',
-    prepareActive: true
+    prepareActive: true,
+
+    topicNames: {
+        "0": "Coding",
+        "1": "Hacking",
+        "2": "Files",
+        "3": "Modding",
+        "4": "Connection",
+        "5": "Review",
+        "6": "Formats",
+        "7": "Misc",
+        "8": "Writing",
+        "9": "Help",
+        "10": "Playing",
+        "11": "Sites",
+        "12": "Textures",
+        "13": "13",
+        "14": "Game",
+        "15": "Updates",
+        "16": "Cheating",
+        "17": "Forums",
+        "18": "Memory",
+        "19": "Emulation"
+    }
 }
 
 const modeSlice = createSlice({
     name: 'mode',
-    // initialState: stateForTesting,
-    initialState: {mode:[]},
+    initialState: stateForTesting,
+    // initialState: {mode:[]},
     reducers: {
         setMode(state, action) {
             if (state.mode.length > 0){
@@ -231,6 +254,7 @@ const modeSlice = createSlice({
 export const selectMode = state => state.mode.mode
 export const selectModeQuery = state => state.mode
 export const selectCSV = state => state.mode.csv
+
 
 export const {setMode ,summaryQuery, setCSV, setPreparations, setTopicNames} = modeSlice.actions
 export default modeSlice.reducer

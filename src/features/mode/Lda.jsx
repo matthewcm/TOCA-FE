@@ -11,7 +11,7 @@ import  ContentEditableDiv from 'react-contenteditable'
 const Lda = () => {
 
     const dispatch = useDispatch()
-    const {mode, modeActive, csvActive,csv, prepareActive} = useSelector(selectModeQuery)
+    const {mode, modeActive, csvActive,csv, prepareActive, topicNames:topicNamesS} = useSelector(selectModeQuery)
     const [topicK, setTopicK] = useState(null);
     const [topicKS, setTopicKS] = useState(null);
     const [topicKW, setTopicKW] = useState(null);
@@ -23,7 +23,9 @@ const Lda = () => {
     const [topicDocs, setTopicDocs ] = useState(null)
 
 
-        const [topicNames, setTopicNames] = useState({});
+    const [topicNames, setTopicNames] = useState(topicNamesS || {});
+
+    console.log(topicNames)
 
     const onTopicK = (e) => {
         setTopicK(e.target.value)
@@ -78,11 +80,18 @@ const Lda = () => {
                     setTopicDocs(response.data)
                     const initialTopicNames = {}
                     {response.data.data.slice(0,200).map(row => {
-                        initialTopicNames[row[0]] = row[0].toString()
+                        let rowName = row[0].toString()
+                        if (topicNamesS){
+                           rowName = topicNamesS[row[0]]
+                        }
+                        initialTopicNames[row[0]] = rowName
                     })}
 
                     console.log(initialTopicNames)
 
+                    if (Object.keys(topicNames).length  === 0){
+
+                    }
                     setTopicNames(initialTopicNames)
                         // embed.embed_item(response.data)
                         //            setPlot(embed.embed_item(data))
