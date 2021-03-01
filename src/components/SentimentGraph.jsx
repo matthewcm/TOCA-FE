@@ -1,50 +1,59 @@
-import React from 'react';
-import {curveCatmullRom} from 'd3-shape';
+import React from 'react'
+import { Line } from 'react-chartjs-2'
+import 'chartjs-plugin-error-bars'
 
-import {
-    XYPlot,
-    XAxis,
-    YAxis,
-    HorizontalGridLines,
-    VerticalGridLines,
-    LineSeries,
-} from 'react-vis';
 
-export default function SentimentGraph(props) {
+const options = {
+    scales: {
+        yAxes: [
+            {
+                ticks: {
+                    min:-1,
+                    max:1
+                },
+            },
+        ],
+    },
+}
+
+const CountGraph = (props) => {
+
+    const labels = []
+    const datasetData = []
+    const errorBars = {}
+
     const plots = props.data.filter(row => row.topic === props.topic).map(row => {
 
-        return {
-            x: Date.parse(row.date),
-            y: row.sentiment
-        }
+        labels.push(Date.parse(row.date))
+        datasetData.push(row.sentiment)
+        console.log('Q1, ', row.Q1)
+        errorBars[Date.parse(row.date)] = {plus: row.sentiment - row.Q1, minus: row.sentiment - row.Q3}
     })
+    console.log(errorBars)
+
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: '# of Votes',
+                data: datasetData,
+                errorBars: errorBars,
+                fill: false,
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgba(255, 99, 132, 0.2)',
+            },
+        ],
+    }
     console.log(plots)
     return (
-        <XYPlot
-            yDomain={[
-                -1,
-                1
-            ]}
-            width={1200}
-            height={300}
-            xType="time"
-        >
-            <HorizontalGridLines style={{stroke: '#B7E9ED'}} />
-            <VerticalGridLines style={{stroke: '#B7E9ED'}} />
-            <XAxis
-                title="Date"
-                style={{
-                    line: {stroke: '#ADDDE1'},
-                    ticks: {stroke: '#ADDDE1'},
-                    text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600}
-                }}
-            />
-            <YAxis title="Sentiment Score" />
-            <LineSeries
-                className="fourth-series"
-                curve={curveCatmullRom.alpha(0.5)}
-                data={plots}
-            />
-        </XYPlot>
-    );
+
+        <>
+            <div className='header'>
+                <h1 className='title'> {props.topic} Sentiment over time</h1>
+            </div>
+            <Line data={data} options={options} />
+        </>
+    )
 }
+
+export default CountGraph
