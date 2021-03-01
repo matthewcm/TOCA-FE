@@ -4,7 +4,7 @@ import {selectModeQuery, selectCSV} from "./modeSlice";
 import {useSelector} from "react-redux";
 import {readString} from "react-papaparse";
 import ReactLoading from 'react-loading';
-import LineGraph from "../../components/LineGraph";
+import SentimentGraph from "../../components/SentimentGraph";
 
 const Results = () => {
 
@@ -204,7 +204,7 @@ const Results = () => {
             {/*                <div className="py-8">*/}
             {/*                    <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">*/}
             {/*                        <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">*/}
-            {/*                            <LineGraph data={sentimentData} />*/}
+            {/*                            <SentimentGraph data={sentimentData} />*/}
             {/*                        </div>*/}
             {/*                    </div>*/}
             {/*                </div>*/}

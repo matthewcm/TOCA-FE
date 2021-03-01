@@ -10,21 +10,18 @@ import {
     LineSeries,
 } from 'react-vis';
 
-export default function LineGraph(props) {
+export default function CountGraph(props) {
+    console.log(props)
     const plots = props.data.filter(row => row.topic === props.topic).map(row => {
 
         return {
             x: Date.parse(row.date),
-            y: row.sentiment
+            y: row.count
         }
     })
     console.log(plots)
     return (
         <XYPlot
-            yDomain={[
-                -1,
-                1
-            ]}
             width={1200}
             height={300}
             xType="time"
@@ -39,7 +36,7 @@ export default function LineGraph(props) {
                     text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600}
                 }}
             />
-            <YAxis title="Sentiment Score" />
+            <YAxis title="Document Count" />
             <LineSeries
                 className="fourth-series"
                 curve={curveCatmullRom.alpha(0.5)}

@@ -237,7 +237,7 @@ const modeSlice = createSlice({
             }
         },
         setCSV(state, action) {
-            state.csv = readString(action.payload.csv).data
+            state.csv = readString(action.payload.csv, {skipEmptyLines: true}).data
             state.csvActive = true
         },
         setPreparations(state, action) {

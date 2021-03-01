@@ -8,7 +8,8 @@ import ReactLoading from 'react-loading'
 import tabledf from './table-df.json'
 import  ContentEditableDiv from 'react-contenteditable'
 
-import LineGraph from "../../components/LineGraph";
+import SentimentGraph from "../../components/SentimentGraph";
+import CountGraph from "../../components/CountGraph";
 const Sentiment = () => {
 
     const dispatch = useDispatch()
@@ -125,7 +126,7 @@ const Sentiment = () => {
                                         let d = row[column]
 
                                         if (column === "topic"){
-                                            d = topicNames[d]
+                                            d = topicNames[d] || d
                                         }
 
 
@@ -147,17 +148,17 @@ const Sentiment = () => {
                         Sentiment Analysis Graphs
                     </div>
                     {
-                        Object.keys(topicNames).map(topicName => (
+                        topicNames && Object.keys(topicNames).map(topicName => (
                             <div className="overflow-hidden">
                                 <div className="text-2xl font-medium text-gray-800 dark:text-white">
-                                    Topic: {topicNames[topicName]}
+                                    Topic: {topicNames[topicName] || topicName}
                                 </div>
 
                                 <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-7xl max-h-full object-cover">
                                     <div className="py-8">
                                         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
                                             <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-                                                <LineGraph data={sentiment} topic={topicName} />
+                                                <SentimentGraph data={sentiment} topic={topicName} />
                                             </div>
                                         </div>
                                     </div>
@@ -165,6 +166,31 @@ const Sentiment = () => {
                             </div>
 
                         ))
+
+                    }
+                    <div className="text-2xl font-medium text-gray-800 dark:text-white">
+                        Popularity Over time
+                    </div>
+                    {
+                        topicNames && Object.keys(topicNames).map(topicName => (
+                            <div className="overflow-hidden">
+                                <div className="text-2xl font-medium text-gray-800 dark:text-white">
+                                    Topic: {topicNames[topicName] || topicName}
+                                </div>
+
+                                <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-7xl max-h-full object-cover">
+                                    <div className="py-8">
+                                        <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
+                                            <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                                                <CountGraph data={sentiment} topic={topicName} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        ))
+
                     }
                 </div>
                 }
