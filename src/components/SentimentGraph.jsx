@@ -35,7 +35,7 @@ const CountGraph = (props) => {
         labels: labels,
         datasets: [
             {
-                label: '# of Votes',
+                label: 'Sentiment Scores',
                 data: datasetData,
                 errorBars: errorBars,
                 fill: false,

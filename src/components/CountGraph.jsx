@@ -31,7 +31,7 @@ const CountGraph = (props) => {
         labels: labels,
         datasets: [
             {
-                label: '# of Votes',
+                label: '# of documents',
                 data: datasetData,
                 fill: false,
                 backgroundColor: 'rgb(255, 99, 132)',
