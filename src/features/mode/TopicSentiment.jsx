@@ -19,7 +19,7 @@ const Sentiment = () => {
 
     const [sentiment, setSentiment] = useState(null)
 
-    const [topicNames, setTopicNames] = useState(topicNamesS || {});
+    const [topicNames, setTopicNames] = useState(topicNamesS || []);
 
     console.log(topicNames)
 
@@ -126,7 +126,7 @@ const Sentiment = () => {
                                         let d = row[column]
 
                                         if (column === "topic"){
-                                            d = topicNames[d] || d
+                                            d = topicNames[d].name || d
                                         }
 
 
@@ -147,42 +147,39 @@ const Sentiment = () => {
                     <div className="text-2xl font-medium text-gray-800 dark:text-white">
                         Sentiment Analysis Graphs
                     </div>
-                    {
-                        topicNames && Object.keys(topicNames).map(topicName => (
-                            <div className="overflow-hidden">
-                                <div className="text-2xl font-medium text-gray-800 dark:text-white">
-                                    Topic: {topicNames[topicName] || topicName}
-                                </div>
+                    <div className="overflow-hidden">
+                        {/*<div className="text-2xl font-medium text-gray-800 dark:text-white">*/}
+                        {/*    Topic: {topicNames[topicNames] || topicName}*/}
+                        {/*</div>*/}
 
-                                <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-7xl max-h-full object-cover">
-                                    <div className="py-8">
-                                        <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
-                                            <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-                                                <SentimentGraph data={sentiment} topic={topicName} />
-                                            </div>
-                                        </div>
+                        <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-7xl max-h-full object-cover">
+                            <div className="py-8">
+                                <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
+                                    <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                                        <SentimentGraph data={sentiment} topics={topicNames} />
                                     </div>
                                 </div>
                             </div>
-
-                        ))
+                        </div>
+                    </div>
+                    {
 
                     }
                     <div className="text-2xl font-medium text-gray-800 dark:text-white">
                         Popularity Over time
                     </div>
                     {
-                        topicNames && Object.keys(topicNames).map(topicName => (
+                        topicNames.map(topic=> (
                             <div className="overflow-hidden">
                                 <div className="text-2xl font-medium text-gray-800 dark:text-white">
-                                    Topic: {topicNames[topicName] || topicName}
+                                    Topic: {topicNames[topic] || topic.name }
                                 </div>
 
                                 <div className="container mx-auto px-4 sm:px-8 overflow-auto max-w-7xl max-h-full object-cover">
                                     <div className="py-8">
                                         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-auto">
                                             <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-                                                <CountGraph data={sentiment} topic={topicName} />
+                                                <CountGraph data={sentiment} topic={topic.name} />
                                             </div>
                                         </div>
                                     </div>

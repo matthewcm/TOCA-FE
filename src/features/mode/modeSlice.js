@@ -354,28 +354,90 @@ const stateForTesting = {
     stopwords: 'as, a',
     prepareActive: true,
 
-    topicNames: {
-        "0": "Coding",
-        "1": "Hacking",
-        "2": "Files",
-        "3": "Modding",
-        "4": "Connection",
-        "5": "Review",
-        "6": "Formats",
-        "7": "Misc",
-        "8": "Writing",
-        "9": "Help",
-        "10": "Playing",
-        "11": "Sites",
-        "12": "Textures",
-        "13": "13",
-        "14": "Game",
-        "15": "Updates",
-        "16": "Cheating",
-        "17": "Forums",
-        "18": "Memory",
-        "19": "Emulation"
-    }
+    topicNames:
+
+        [
+            {
+                "name": "Coding",
+                "colour": "#F0F8FF"
+            },
+            {
+                "name": "Hacking",
+                "colour": "#FAEBD7"
+            },
+            {
+                "name": "Files",
+                "colour": "#00FFFF"
+            },
+            {
+                "name": "Modding",
+                "colour": "#7FFFD4"
+            },
+            {
+                "name": "Connection",
+                "colour": "#F0FFFF"
+            },
+            {
+                "name": "Review",
+                "colour": "#F5F5DC"
+            },
+            {
+                "name": "Formats",
+                "colour": "#FFE4C4"
+            },
+            {
+                "name": "Misc",
+                "colour": "#000000"
+            },
+            {
+                "name": "Writing",
+                "colour": "#FFEBCD"
+            },
+            {
+                "name": "Help",
+                "colour": "#0000FF"
+            },
+            {
+                "name": "Playing",
+                "colour": "#8A2BE2"
+            },
+            {
+                "name": "Sites",
+                "colour": "#A52A2A"
+            },
+            {
+                "name": "Textures",
+                "colour": "#DEB887"
+            },
+            {
+                "name": "13",
+                "colour": "#5F9EA0"
+            },
+            {
+                "name": "Game",
+                "colour": "#7FFF00"
+            },
+            {
+                "name": "Updates",
+                "colour": "#D2691E"
+            },
+            {
+                "name": "Cheating",
+                "colour": "#FF7F50"
+            },
+            {
+                "name": "Forums",
+                "colour": "#6495ED"
+            },
+            {
+                "name": "Memory",
+                "colour": "#FFF8DC"
+            },
+            {
+                "name": "Emulation",
+                "colour": "#DC143C"
+            }
+        ]
 }
 
 const modeSlice = createSlice({

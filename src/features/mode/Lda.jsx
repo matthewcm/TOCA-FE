@@ -23,7 +23,7 @@ const Lda = () => {
     const [topicDocs, setTopicDocs ] = useState(null)
 
 
-    const [topicNames, setTopicNames] = useState(topicNamesS || {});
+    const [topicNames, setTopicNames] = useState(topicNamesS || []);
 
     console.log(topicNames)
 
@@ -35,79 +35,6 @@ const Lda = () => {
     }
     const onSubmit= () => {
         setTopicKS(topicK)
-        setTrainLda(true)
-    }
-    const onLoadVisual = () => {
-        setTopicKS(topicK)
-        setLoadVisual(true)
-    }
-
-    const onTopicNameChange = (docNumber, e) => {
-       setTopicNames({...topicNames, [docNumber]: e.target.value })
-    }
-
-    const topicNameSubmit = () =>{
-        dispatch(
-            setTopicNamesR({
-                topicNames: topicNames
-            })
-        )
-    }
-
-    // console.log(csv)
-    // This should not be a use effect! Just a submit handler
-    useEffect(( ) => {
-        const getLda = async () => {
-            console.log('GET LDA')
-            await Axios.get(`/lda?topics=${topicK}`)
-                .then(response => {
-
-                        //            console.log(data)
-                        console.log(response.data)
-                        embed.embed_item(response.data)
-                        setPlotActive(true)
-                        setLoadVisual(false)
-                        //            setPlot(embed.embed_item(data))
-                    }
-                )
-        }
-        const getTopics = async () => {
-            return await Axios.get(`/lda-topic-table?topics=${topicK}&keywords=${topicKW}`)
-                .then(response => {
-
-                        //           console.log(data)
-                    console.log(response.data)
-                    setTopicDocs(response.data)
-                    const initialTopicNames = {}
-                    {response.data.data.slice(0,200).map(row => {
-                        let rowName = row[0].toString()
-                        if (topicNamesS){
-                           rowName = topicNamesS[row[0]]
-                        }
-                        initialTopicNames[row[0]] = rowName
-                    })}
-
-                    console.log(initialTopicNames)
-
-                    if (Object.keys(topicNames).length  === 0){
-
-                    }
-                    setTopicNames(initialTopicNames)
-                        // embed.embed_item(response.data)
-                        //            setPlot(embed.embed_item(data))
-                    }
-                )
-        }
-
-        if (loadVisual && topicKS){
-            getLda()
-            getTopics()
-        }
-
-    }, [loadVisual])
-
-    useEffect(() => {
-
         console.log('TOPICS')
         console.log(topicK)
         const trainLda = async () => {
@@ -119,38 +46,93 @@ const Lda = () => {
                         console.log(response.data)
                         embed.embed_item(response.data)
                         setPlotActive(true)
-                    setTrainLda(false)
+                        setTrainLda(false)
                         //            setPlot(embed.embed_item(data))
                     }
                 )
         }
 
-        if (trainLda && topicKS){
+        if (topicKS){
             trainLda()
                 .then(() => {setLoadVisual(false)}).catch(e => console.log(e))
 
         }
+    }
+    const getLda = async () => {
+        console.log('GET LDA')
+        await Axios.get(`/lda?topics=${topicK}`)
+            .then(response => {
 
-    }, [trainLda])
+                    //            console.log(data)
+                    console.log(response.data)
+                    embed.embed_item(response.data)
+                    setPlotActive(true)
+                    setLoadVisual(false)
+                    //            setPlot(embed.embed_item(data))
+                }
+            )
+    }
+    const getTopics = async () => {
+        return await Axios.get(`/lda-topic-table?topics=${topicK}&keywords=${topicKW}`)
+            .then(response => {
 
-    useEffect(() => {
-        console.log('uploading')
-        console.log(csv)
+                    //           console.log(data)
+                    console.log(response.data)
+                    setTopicDocs(response.data)
+                    const initialTopicNames = []
+                    {response.data.data.map(row => {
+                        let rowName = row[0].toString()
+                        initialTopicNames[row[0]] = {name: rowName, colour: row[2]}
+                    })}
+                    console.log(initialTopicNames)
 
-        const postCSV = async () => {
-            await Axios.post(
-                "/upload_csv",
-                csv,
-            ).catch(err => console.log(err))
+                    const topicNameList = []
 
+                    Object.keys(initialTopicNames).forEach(topic => {
+                        topicNameList.push(initialTopicNames[topic])
+                    })
+                    setTopicNames(topicNameList)
+
+                    setLoadVisual(true)
+                }
+            )
+    }
+    const onLoadVisual = async () => {
+        console.log('loading visual')
+
+        if (topicK && topicKW){
+            await getLda()
+            await getTopics()
         }
+    }
+
+    const onTopicNameChange = (docNumber, colour , e) => {
+        const newTopicList = [...topicNames]
+        newTopicList[docNumber] = {name: e.target.value, colour}
+       setTopicNames(newTopicList)
+    }
+
+    const topicNameSubmit = () =>{
+        console.log(topicNames)
+        dispatch(
+            setTopicNamesR({topicNames:topicNames})
+        )
+    }
 
 
-        // postCSV()
-
-
-
-    }, [])
+    // useEffect(() => {
+    //     console.log('uploading')
+    //     console.log(csv)
+    //
+    //     const postCSV = async () => {
+    //         await Axios.post(
+    //             "/upload_csv",
+    //             csv,
+    //         ).catch(err => console.log(err))
+    //
+    //     }
+    //     // postCSV()
+    // }, [])
 
     // useEffect(() => {
     //    fetch(
@@ -254,7 +236,7 @@ const Lda = () => {
                 {/*)}*/}
             {topicDocs &&
             <div className="py-8 w-full">
-                <table className="m-auto max-w-6xl leading-normal text-center text-2xl">
+                <table className="m-auto max-w-6xl leading-loose text-center text-2xl">
                     <thead>
                     <tr>
                         {topicDocs.columns.map(column=>(
@@ -265,26 +247,29 @@ const Lda = () => {
                         ) )}
                     </tr>
 
-                    {topicDocs.data.slice(0,200).map(dt => (
-                        <tr className="border-b-2 border-gray-200" style={{backgroundColor: `${dt[2]}`}}>
+                    {loadVisual && topicDocs.data.slice(0,200).map(dt => (
+                        // change background colour to just the td
+                        <tr className="border-b-2 border-gray-200" >
                             {dt.map((d, i) => {
 
 
                                     let dataMap = ''
+                                    let backgroundC = 'white'
 
                                     switch (i){
                                         case (0):
-                                            const topicNumber =d.toString();
+                                            const topicNumber =d;
                                             dataMap = <div>
-                                                <ContentEditableDiv tagName="span" onChange={(e) => onTopicNameChange(topicNumber, e) } html={topicNames[topicNumber]} />
+                                                <ContentEditableDiv tagName="span" onChange={(e) => onTopicNameChange(topicNumber, dt[2],e) } html={topicNames[topicNumber].name} />
                                                 <span> ✏️</span>
                                             </div>
                                             ;break
                                         case(1):  dataMap = d.map(wo => <span>{wo}, </span>);break
+                                        case(2):  backgroundC = d; dataMap =  <div style={{backgroundColor: 'white', lineHeight: 1}}> {d} </div>;break
                                         default: dataMap = d
                                     }
                                     return (
-                                        <td className="border-l-2 border-gray-200">
+                                        <td style={{backgroundColor: backgroundC}} className="border-l-2 border-gray-200">
                                             {dataMap}
                                         </td>
 

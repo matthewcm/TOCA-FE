@@ -3,3 +3,8 @@
 @tailwind components;
 
 @tailwind utilities;
+
+.stroke {
+    -webkit-text-stroke: 1px white;
+    font-weight: bold;
+}
