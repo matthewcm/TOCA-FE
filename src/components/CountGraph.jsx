@@ -1,6 +1,5 @@
 import React from 'react'
 import { Line } from 'react-chartjs-2'
-import 'chartjs-plugin-error-bars'
 
 
 const options = {
@@ -19,7 +18,6 @@ const CountGraph = (props) => {
 
     const labels = []
     const datasetData = []
-    const errorBars = {}
 
     const plots = props.data.filter(row => row.topic === props.topic).map(row => {
 
@@ -39,7 +37,6 @@ const CountGraph = (props) => {
             },
         ],
     }
-    console.log(plots)
    return (
 
     <>

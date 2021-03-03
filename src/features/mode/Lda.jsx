@@ -5,7 +5,6 @@ import {selectModeQuery, setTopicNames as setTopicNamesR} from "./modeSlice";
 import {embed} from '@bokeh/bokehjs'
 import Axios from 'axios'
 import ReactLoading from 'react-loading'
-import tabledf from './table-df.json'
 import  ContentEditableDiv from 'react-contenteditable'
 
 const Lda = () => {
@@ -17,6 +16,7 @@ const Lda = () => {
     const [topicKW, setTopicKW] = useState(null);
     const [plotActive,setPlotActive] = useState(false);
 
+    const [ldaRange, setLdaRange] = useState([])
     const [trainLda, setTrainLda] = useState(false);
     const [loadVisual, setLoadVisual] = useState(false);
 
@@ -25,7 +25,6 @@ const Lda = () => {
 
     const [topicNames, setTopicNames] = useState(topicNamesS || []);
 
-    console.log(topicNames)
 
     const onTopicK = (e) => {
         setTopicK(e.target.value)
@@ -33,7 +32,37 @@ const Lda = () => {
     const onTopicKW = (e) => {
         setTopicKW(e.target.value)
     }
-    const onSubmit= () => {
+    const onKSubmit= async() => {
+        const calcLda= async (nTopic, range) => {
+            console.log('train LDA')
+            return await Axios.get(`/calculate-k-topics?topics=${nTopic}&keywords=${topicKW}`)
+                .then(response => {
+                        const newLdaRange = [...range]
+                        newLdaRange.push(response.data)
+
+                        setLdaRange(newLdaRange)
+
+                        return newLdaRange
+                    }
+                )
+        }
+
+        if (topicK && topicKW){
+            console.log(topicK)
+            let range = [...ldaRange]
+            for (let i = topicK - 5; i < topicK + 5; i++ ){
+                console.log(i < topicK + 5)
+                if (i < 1){
+                    continue
+                }
+
+                range = await calcLda(i, range)
+
+            }
+
+        }
+    }
+    const onSubmit= async () => {
         setTopicKS(topicK)
         console.log('TOPICS')
         console.log(topicK)
@@ -42,18 +71,15 @@ const Lda = () => {
             await Axios.get(`/train-lda?topics=${topicK}`)
                 .then(response => {
 
-                        //            console.log(data)
                         console.log(response.data)
                         embed.embed_item(response.data)
                         setPlotActive(true)
                         setTrainLda(false)
-                        //            setPlot(embed.embed_item(data))
-                    }
-                )
+                })
         }
 
-        if (topicKS){
-            trainLda()
+        if (topicK){
+            await trainLda()
                 .then(() => {setLoadVisual(false)}).catch(e => console.log(e))
 
         }
@@ -78,7 +104,6 @@ const Lda = () => {
 
                     //           console.log(data)
                     console.log(response.data)
-                    setTopicDocs(response.data)
                     const initialTopicNames = []
                     {response.data.data.map(row => {
                         let rowName = row[0].toString()
@@ -91,7 +116,9 @@ const Lda = () => {
                     Object.keys(initialTopicNames).forEach(topic => {
                         topicNameList.push(initialTopicNames[topic])
                     })
-                    setTopicNames(topicNameList)
+
+                setTopicDocs(response.data)
+                setTopicNames(topicNameList)
 
                     setLoadVisual(true)
                 }
@@ -109,7 +136,7 @@ const Lda = () => {
     const onTopicNameChange = (docNumber, colour , e) => {
         const newTopicList = [...topicNames]
         newTopicList[docNumber] = {name: e.target.value, colour}
-       setTopicNames(newTopicList)
+        setTopicNames(newTopicList)
     }
 
     const topicNameSubmit = () =>{
@@ -153,73 +180,78 @@ const Lda = () => {
 
 
     return (
-    <CSSTransition
-        in={modeActive & csvActive & mode.includes('lda') & prepareActive }
-        timeout={{exit:500, enter:2000}}
-        classNames="preprocessing"
-        unmountOnExit
-        // onEnter={() => setShowButton(false)}
-        // onExited={() => setShowButton(true)}
-    >
-        <div className="">
-            <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2 ">
-                LDA
-            </h2>
-
-
-            <div
-                className="text-center max-w-3xl m-auto pt-4"
-            >
-                <h2 className="max-w-3xl text-2xl md:text-1xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-                    LDA performance tweaks
+        <CSSTransition
+            in={modeActive & csvActive & mode.includes('lda') & prepareActive }
+            timeout={{exit:500, enter:2000}}
+            classNames="preprocessing"
+            unmountOnExit
+            // onEnter={() => setShowButton(false)}
+            // onExited={() => setShowButton(true)}
+        >
+            <div className="">
+                <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2 ">
+                    LDA
                 </h2>
-                <div className=" pb-4 bg-white shadow-md rounded px-8 pt-4">
-                    <div className="pb-4">
 
-                        <label htmlFor="k number of topics topics" className="text-sm block font-bold  pb-2">Provide number of topics</label>
-                        <input  value={topicK} type="number" onChange={onTopicK} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
-                                min="1" max="100" placeholder='20'/>
 
-                        <label htmlFor="k number of topics topics" className="text-sm block font-bold  pb-2">Provide number of topics keywords</label>
-                        <input  value={topicKW} type="number" onChange={onTopicKW} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
-                                min="1" max="100" placeholder='10'/>
+                <div
+                    className="text-center max-w-3xl m-auto pt-4"
+                >
+                    <h2 className="max-w-3xl text-2xl md:text-1xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
+                        LDA performance tweaks
+                    </h2>
+                    <div className=" pb-4 bg-white shadow-md rounded px-8 pt-4">
+                        <div className="pb-4">
 
+                            <label htmlFor="k number of topics topics" className="text-sm block font-bold  pb-2">Provide number of topics</label>
+                            <input  value={topicK} type="number" onChange={onTopicK} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
+                                    min="1" max="100" placeholder='20'/>
+
+                            <label htmlFor="k number of topics topics" className="text-sm block font-bold  pb-2">Provide number of topics keywords</label>
+                            <input  value={topicKW} type="number" onChange={onTopicKW} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300 "
+                                    min="1" max="100" placeholder='10'/>
+
+                        </div>
+
+                        <div className="flex items-center justify-center ">
+                            <button
+                                onClick={onKSubmit}
+                                className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                                Apply K-topics range
+                            </button>
+                            <button
+                                onClick={onSubmit}
+                                className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                                Apply tweaks
+                            </button>
+                            <button
+                                onClick={onLoadVisual}
+                                className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                                Load Visual
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="flex items-center justify-center ">
-                        <button
-                            onClick={onSubmit}
-                            className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-                            Apply tweaks
-                        </button>
-                        <button
-                            onClick={onLoadVisual}
-                            className={`m-1 uppercase py-2 my-2 px-4 md:mt-8  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-                            Load Visual
-                        </button>
-                    </div>
+                </div>
+                <div className="m-auto" id='mypot'>
                 </div>
 
-            </div>
-            <div className="m-auto" id='mypot'>
-            </div>
-
-            <div className="m-auto flex justify-center" id='myplot'>
-                {topicKS && !plotActive && (
+                <div className="m-auto flex justify-center" id='myplot'>
+                    {topicKS && !plotActive && (
 
 
-                    <div className="mt-4  m-4 m-auto mb-8 h-96 w-96 border-t-4 rounded border-indigo-500 shadow text-center p-4">
-                        <div className="text-2xl font-medium text-black dark:text-white">
-                            LDA Analysis Loading...
+                        <div className="mt-4  m-4 m-auto mb-8 h-96 w-96 border-t-4 rounded border-indigo-500 shadow text-center p-4">
+                            <div className="text-2xl font-medium text-black dark:text-white">
+                                LDA Analysis Loading...
+                            </div>
+                            <div className="w-4/6 content-center flex flex-wrap justify-center m-auto  items-center align-middle overflow-hidden">
+
+                                <ReactLoading className="h-full w-full align-middle items-center justify-center content-center" type={'spin'} color={'blue'} height={'100%'} width={'100%'} />
+                            </div>
                         </div>
-                        <div className="w-4/6 content-center flex flex-wrap justify-center m-auto  items-center align-middle overflow-hidden">
 
-                            <ReactLoading className="h-full w-full align-middle items-center justify-center content-center" type={'spin'} color={'blue'} height={'100%'} width={'100%'} />
-                        </div>
-                    </div>
-
-                )}
-            </div>
+                    )}
+                </div>
                 {/*{topicKS && !plotActive && (*/}
 
 
@@ -234,69 +266,112 @@ const Lda = () => {
                 {/*    </div>*/}
 
                 {/*)}*/}
-            {topicDocs &&
-            <div className="py-8 w-full">
-                <table className="m-auto max-w-6xl leading-loose text-center text-2xl">
-                    <thead>
-                    <tr>
-                        {topicDocs.columns.map(column=>(
+                {
+                    ldaRange &&
+                    <div className="py-8 w-full">
+                        {[...ldaRange].map(ldaScore => {
+                            console.log(ldaRange)
+                            return (
+                                <div>
 
-                            <th className="">
-                                {column}
-                            </th>
-                        ) )}
-                    </tr>
+                                    <h1>Perplexity: {ldaScore.perplexity}</h1>
+                                    <h1>Coherency: {ldaScore.coherence}</h1>
+                                    <table className="m-auto max-w-6xl leading-loose text-center text-2xl">
+                                        <thead>
+                                        <tr>
 
-                    {loadVisual && topicDocs.data.slice(0,200).map(dt => (
-                        // change background colour to just the td
-                        <tr className="border-b-2 border-gray-200" >
-                            {dt.map((d, i) => {
+                                            <th className="">
+                                                Topic Name
+                                            </th>
+                                            <th className="">
+                                                Keywords
+                                            </th>
+                                        </tr>
 
+                                        {ldaScore.topic_df.map(row =>(
+                                            <tr className="border-b-2 border-gray-200" >
+                                                <td className="border-l-2 border-gray-200">
+                                                    {row['Topic Name']}
+                                                </td>
+                                                <td className="border-l-2 border-gray-200">
+                                                    {row['Topic Keywords'].map(keyword => <span> {keyword}, </span>)}
+                                                </td>
 
-                                    let dataMap = ''
-                                    let backgroundC = 'white'
+                                            </tr>
+                                        ))}
+                                        </thead>
+                                    </table>
+                                </div>
 
-                                    switch (i){
-                                        case (0):
-                                            const topicNumber =d;
-                                            dataMap = <div>
-                                                <ContentEditableDiv tagName="span" onChange={(e) => onTopicNameChange(topicNumber, dt[2],e) } html={topicNames[topicNumber].name} />
-                                                <span> ✏️</span>
-                                            </div>
-                                            ;break
-                                        case(1):  dataMap = d.map(wo => <span>{wo}, </span>);break
-                                        case(2):  backgroundC = d; dataMap =  <div style={{backgroundColor: 'white', lineHeight: 1}}> {d} </div>;break
-                                        default: dataMap = d
-                                    }
-                                    return (
-                                        <td style={{backgroundColor: backgroundC}} className="border-l-2 border-gray-200">
-                                            {dataMap}
-                                        </td>
-
-                                    )
-                                }
                             )
+                        })}
 
-                            }
+                    </div>
+
+                }
+                {topicDocs &&
+                <div className="py-8 w-full">
+                    <table className="m-auto max-w-6xl leading-loose text-center text-2xl">
+                        <thead>
+                        <tr>
+                            {topicDocs.columns.map(column=>(
+
+                                <th className="">
+                                    {column}
+                                </th>
+                            ) )}
                         </tr>
-                    ))}
-                    </thead>
-                </table>
 
-                <div className="m-auto text-center mt-5">
+                        {loadVisual && topicDocs.data.slice(0,200).map(dt => (
+                            // change background colour to just the td
+                            <tr className="border-b-2 border-gray-200" >
+                                {dt.map((d, i) => {
 
-                    <a
-                        onClick={topicNameSubmit}
-                        className={` m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
-                        Save Topic Names
-                    </a>
+
+                                        let dataMap = ''
+                                        let backgroundC = 'white'
+
+                                        switch (i){
+                                            case (0):
+                                                const topicNumber =d;
+                                                dataMap = <div>
+                                                    <ContentEditableDiv tagName="span" onChange={(e) => onTopicNameChange(topicNumber, dt[2],e) } html={topicNames[topicNumber].name} />
+                                                    <span> ✏️</span>
+                                                </div>
+                                                ;break
+                                            case(1):  dataMap = d.map(wo => <span>{wo}, </span>);break
+                                            case(2):  backgroundC = d; dataMap =  <div style={{backgroundColor: 'white', lineHeight: 1}}> {d} </div>;break
+                                            default: dataMap = d
+                                        }
+                                        return (
+                                            <td style={{backgroundColor: backgroundC}} className="border-l-2 border-gray-200">
+                                                {dataMap}
+                                            </td>
+
+                                        )
+                                    }
+                                )
+
+                                }
+                            </tr>
+                        ))}
+                        </thead>
+                    </table>
+
+                    <div className="m-auto text-center mt-5">
+
+                        <a
+                            onClick={topicNameSubmit}
+                            className={` m-1 uppercase py-2 my-2 px-4 md:mt-16  dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md`}>
+                            Save Topic Names
+                        </a>
+                    </div>
                 </div>
+                }
+
             </div>
-            }
 
-        </div>
-
-    </CSSTransition>
+        </CSSTransition>
     )
 
 }

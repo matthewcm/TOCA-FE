@@ -1,11 +1,15 @@
 import React from 'react'
+import ErrorBarPlugin from "./ErrorBarPlugin";
 import { Line } from 'react-chartjs-2'
-import 'chartjs-plugin-error-bars'
+// import 'chartjs-plugin-error-bars'
+// import 'chartjs-chart-error-bars'
 import {useSelector} from "react-redux";
 import {selectModeQuery} from "../features/mode/modeSlice";
 
 
 const options = {
+    absoluteValues: true,
+
     scales: {
         yAxes: [
             {
@@ -16,16 +20,25 @@ const options = {
             },
         ],
         xAxes: [{
-            ticks: {
-                // Include a dollar sign in the ticks
-                callback: function(item,data, values) {
-                    // console.log(value)
-                    // console.log( index)
-                    const dataset = data.datasets[item.datasetIndex];
-                    const index =item.index;
-                    return dataset.labels[index] + ': $' + dataset.data[index];
+            type: 'time',
+            time: {
+                displayFormats: {
+                   quarter: "MMM YYYY"
                 }
             }
+
+            // ticks: {
+            //     // Include a dollar sign in the ticks
+            //     callback: function(item,data, values) {
+            //         // console.log(value)
+            //         // console.log( index)
+            //         console.log(data)
+            //         console.log(item)
+            //         const dataset = data.datasets[item.datasetIndex];
+            //         const index =item.index;
+            //         return dataset.labels[index] + ': $' + dataset.data[index];
+            //     }
+            // }
         }]
     },
     // maintainAspectRatio: false,
@@ -33,13 +46,16 @@ const options = {
     // tooltips: {
     //     intersect: false,
     //     callbacks: {
-    //         label: function(value, index, values) {
+    //         label: function(item,data, values) {
     //
-    //             console.log(value)
-    //             console.log( index)
-    //             // const dataset = data.datasets[tooltipItem.datasetIndex];
+    //             console.log(item)
+    //             console.log(data)
+    //             console.log(data.datasets[item.datasetIndex])
+    //             // const val= data.datasets[item]
+    //
+    //             return 'stuff'
     //             // const index = tooltipItem.index;
-    //             // return dataset.labels[index] + ': $' + dataset.data[index];
+    //             // return val.x + '- IQR: ' + val.z
     //         }
     //     }
     // }
@@ -50,48 +66,38 @@ const SentimentGraph = (props) => {
 
     const { topicNames} = useSelector(selectModeQuery)
 
+    const labels = []
     const topicDatasets = []
-    console.log('first topic ', props.data[0].topic)
-    console.log('first topic Name ', props.topics[0])
     props.topics.map(topic => {
 
         let topicName = topic.name
 
-
-        const labels = []
+        const datasetLabels = []
         const datasetData = []
         const errorBars = {}
         let colour = topic.colour
 
 
-        props.data.filter(dataset => topicNames[dataset.topic].name === topicName)
+        props.data.filter(dataset => topicNames[dataset.topic]?.name === topicName)
             .forEach(row => {
-
-            console.log(row.topic)
-            console.log(topicNames[row.topic])
-
-            console.log('yipee')
-
-
-            labels.push(Date.parse(row.date))
-            datasetData.push(row.sentiment)
-            // console.log('Q1, ', row.Q1)
-            errorBars[Date.parse(row.date)] = {plus: row.sentiment - row.Q1, minus: row.sentiment - row.Q3}
-            // colour = topicNames[row.topic].colour
+            datasetData.push({x: new Date(Date.parse(row.date)), y: row.sentiment})
+            errorBars[new Date(Date.parse(row.date))] = {plus: row.sentiment - row.Q1, minus: -(row.sentiment - row.Q3)}
         })
-        // console.log(errorBars)
+
+        labels.push(datasetLabels)
+
 
         topicDatasets.push(
             {
                 label: topicName,
                 data: datasetData,
                 errorBars: errorBars,
-                labels: labels,
                 fill: false,
                 backgroundColor: colour,
-                borderColor: colour + '22',
+                borderColor: colour + '11',
             }
         )
+        // console.log(topicDatasets)
 
     })
 
@@ -99,7 +105,9 @@ const SentimentGraph = (props) => {
     const data = {
         // Might be an issue, if different datasets have different labels. (Some dates have 0 results)
         // However should be weekly from one time frame to another.
+        // labels: topicDatasets[0].labels,
         datasets: topicDatasets,
+        labels: labels
     }
     console.log('data', data)
     return (
@@ -108,7 +116,7 @@ const SentimentGraph = (props) => {
             <div className='header'>
                 <h1 className='title'>  Sentiment over time</h1>
             </div>
-            <Line data={data} options={options} />
+            <Line data={data} options={options} plugins={[ErrorBarPlugin]} />
         </>
     )
 }

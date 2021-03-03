@@ -3258,6 +3258,11 @@ chart.js@^2.8.0, chart.js@^2.9.4:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
 
+chartjs-chart-error-bars@^3.0.0-beta.9:
+  version "3.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/chartjs-chart-error-bars/-/chartjs-chart-error-bars-3.0.0-beta.9.tgz#6935b8ef8b19e4797d15b3a0ffafcb4bc328e2d0"
+  integrity sha512-JRfPdnPRTInSSZoKsXkhLluULx8r/6cHUsL4HtGCCvdqaDxrbiZL1nd1SZ9QmnXFNOe4iqkyNn5SK/m6eGDN5A==
+
 chartjs-color-string@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/chartjs-color-string/-/chartjs-color-string-0.6.0.tgz#1df096621c0e70720a64f4135ea171d051402f71"

@@ -38,20 +38,20 @@ const Sentiment = () => {
 
         }
 
-        const getTopics = async () => {
-            return await Axios.post(
-                `/apply-to-trained-lda`,
-                csv,
-        )
+        const getTopics = () => {
+            Axios.get(
+                "/apply-to-trained-lda"
+            )
                 .then(response => {
 
                         console.log(response.data)
                        setPlotActive(true)
                         setSentiment(response.data)
-                    }
-                )
+
+                })
         }
 
+            console.log('get topics')
             getTopics()
 
     }, [])
@@ -97,53 +97,6 @@ const Sentiment = () => {
 
                 {sentiment &&
                 <div className="py-8 w-full">
-                    <table className="m-auto max-w-6xl leading-normal text-center text-2xl">
-                        <thead>
-                        <tr>
-                            {Object.keys(sentiment[0]).map(column=>(
-
-                                <th className="">
-                                    {column}
-                                </th>
-                            ) )}
-                        </tr>
-
-                        {sentiment.slice(0,200).map(row => {
-
-                            return (
-
-                                <tr className={`border-b-2 border-gray-200`}>
-                                    {Object.keys(row).map(column => {
-                                        let styllez = "bg-white"
-
-                                        if (row['sentiment'] > 0.1) {
-                                            styllez = "bg-green-50"
-
-                                        }else if (row['sentiment'] < - 0.1) {
-                                            styllez = "bg-red-50"
-                                        }
-
-                                        let d = row[column]
-
-                                        if (column === "topic"){
-                                            d = topicNames[d].name || d
-                                        }
-
-
-                                            return (
-
-                                                <td className={styllez}>
-                                                    {d}
-                                                </td>
-                                            )
-                                        }
-                                    )}
-                                </tr>
-                            )
-                        })}
-                        </thead>
-                    </table>
-
                     <div className="text-2xl font-medium text-gray-800 dark:text-white">
                         Sentiment Analysis Graphs
                     </div>
@@ -162,9 +115,54 @@ const Sentiment = () => {
                             </div>
                         </div>
                     </div>
-                    {
+                    <table className="m-auto max-w-6xl leading-normal text-center ">
+                        <thead>
+                        <tr>
+                            {Object.keys(sentiment[0]).map(column=>(
 
-                    }
+                                <th className="">
+                                    {column}
+                                </th>
+                            ) )}
+                        </tr>
+
+                        {sentiment.slice(0,20).map(row => {
+
+                            return (
+
+                                <tr className={`border-b-2 border-gray-200`}>
+                                    {Object.keys(row).map(column => {
+                                        let styllez = "bg-white"
+
+                                        if (row['sentiment'] > 0.1) {
+                                            styllez = "bg-green-50"
+
+                                        }else if (row['sentiment'] < - 0.1) {
+                                            styllez = "bg-red-50"
+                                        }
+
+                                        let d = row[column]
+
+                                        if (column === "topic"){
+                                            console.log(topicNames)
+                                            d = topicNames[d]?.name || d
+                                        }
+
+
+                                            return (
+
+                                                <td className={styllez}>
+                                                    {d}
+                                                </td>
+                                            )
+                                        }
+                                    )}
+                                </tr>
+                            )
+                        })}
+                        </thead>
+                    </table>
+
                     <div className="text-2xl font-medium text-gray-800 dark:text-white">
                         Popularity Over time
                     </div>
